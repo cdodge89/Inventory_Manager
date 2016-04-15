@@ -1,0 +1,26 @@
+<div class="row" >\
+	<div class="container">
+		<div class="col-md-3" ng-repeat="product in products.list">
+			<div class="card">
+				<div class="thumbnail">
+					<div class="row info-row">
+						<div class="col-md-6">
+							<div class="name caption">{{product.name}}</div>
+						</div>
+						<div class="col-md-6">
+							<img ng-src="{{product.imgThumbnail}}">
+						</div>
+					</div>
+					<div class="row button-row">
+						<div class="col-md-12">
+							<div class="btn-group" role="group" aria-label="...">
+							  <div class="btn btn-default" ui-sref="product-details({productId: product.id})">More Info</div>
+							  <div class="btn btn-purchase" ui-sref="#"></a> Purchase</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

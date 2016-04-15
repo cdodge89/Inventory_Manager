@@ -1,0 +1,28 @@
+{
+  "name": "inventory_manager",
+  "description": "",
+  "main": "dist/app.js",
+  "authors": [
+    "Connor Dodge"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/cdodge89/Inventory_Manager",
+  "moduleType": [
+    "node"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.3",
+    "bootstrap": "^3.3.6",
+    "font-awesome": "fontawesome#^4.6.1",
+    "angular-ui-router": "^0.2.18",
+    "ngstorage": "^0.3.10"
+  }
+}

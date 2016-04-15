@@ -1,0 +1,30 @@
+{
+  "name": "inventory_manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cdodge89/Inventory_Manager.git"
+  },
+  "author": "Connor Dodge",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cdodge89/Inventory_Manager/issues"
+  },
+  "homepage": "https://github.com/cdodge89/Inventory_Manager#readme",
+  "devDependencies": {
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-clean-css": "^2.0.6",
+    "gulp-concat": "^2.6.0",
+    "gulp-open": "^1.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.2.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.3"
+  }
+}
