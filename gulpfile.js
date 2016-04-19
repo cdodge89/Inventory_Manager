@@ -16,7 +16,8 @@ var   gulp = require('gulp'),
         'dist/bower_components/jquery/dist/jquery.js',
         'dist/bower_components/angular/angular.js',
         'dist/bower_components/angular-ui-router/release/angular-ui-router.js',
-        'src/js/*.js'
+        'dist/bower_components/ngstorage/ngStorage.js',
+        'src/js/**/*.js'
         ])
     .pipe(maps.init())
     .pipe(concat('app.js'))
@@ -67,7 +68,7 @@ var   gulp = require('gulp'),
 
  gulp.task('watchFiles', function() {
   gulp.watch('src/css/*.scss', ['compileSass']);
-  gulp.watch('js/*.js', ['concatScripts']);
+  gulp.watch('src/js/**/*.js', ['concatScripts']);
   gulp.watch('src/index.html', ['copyIndex']);
   gulp.watch('src/views/*.html', ['copyViews']);
 });
@@ -79,7 +80,7 @@ var   gulp = require('gulp'),
 
  gulp.task('default', ['serve'], function(){
  	gulp.watch('src/css/*.scss', ['serve']);
-	gulp.watch('src/js/*.js', ['serve']);
+	gulp.watch('src/js/**/*.js', ['serve']);
 	gulp.watch('src/index.html', ['serve']);
   gulp.watch('src/views/*.html', ['serve']);
  });

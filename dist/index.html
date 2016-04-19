@@ -5,15 +5,36 @@
 	<link rel="stylesheet" type="text/css" href="main.css">
 </head>
 <body ng-app="routerApp">
-	<nav class="navbar" role="navigation">
+	<nav ng-controller="NavbarController as navbar" class="navbar" role="navigation">
 	    <div class="navbar-header">
 	        <a class="navbar-brand" ui-sref="products">BuyStuff.com <i class="fa fa-credit-card"></i></a>
 	    </div>
 	    <ul class="nav navbar-nav navbar-right">
-	    	<li><a ui-sref="login">Login <i class="fa fa-sign-in"></i></a></li>
-	    </ul>
-	    <ul class="nav navbar-nav navbar-right">
-	    	<li><a ui-sref="signup">Sign Up <i class="fa fa-user-plus"></i></a></li>
+	    	<li ng-show="!navbar.isLoggedIn()"><a ui-sref="login">Login <i class="fa fa-sign-in"></i></a></li>
+	    	<li ng-show="!navbar.isLoggedIn()"><a ui-sref="signup">Sign Up <i class="fa fa-user-plus"></i></a></li>
+	    	<!-- <li ng-show="navbar.isLoggedIn()"><a ui-sref="products" ng-click="navbar.logOut()">Logout</a></li> -->
+	    	<li ng-show="navbar.isLoggedIn() && !navbar.isAdmin()">
+	    		<div class="drpdwn">
+				  <button ng-click="navbar.userDrop()" class="dropbtn">{{navbar.userName}} <i class="fa fa-caret-down"></i></button>
+				  <div id="userDropdown" class="dropdown-content">
+				    <a ui-sref="#"><i class="fa fa-shopping-cart"></i> Shopping Cart</a>
+				    <a ui-sref="#" ng-click="navbar.getUsersOrders()"><i class="fa fa-history"></i> Order History</a>
+				    <a ng-click="navbar.logOut()" ui-sref="products"><i class='fa fa-sign-out'></i> Logout</a>
+				  </div>
+				</div>
+	    	</li>
+	    	<li ng-show="navbar.isLoggedIn() && navbar.isAdmin()">
+	    		<div class="drpdwn">
+				  <button ng-click="navbar.adminDrop()" class="dropbtn">{{navbar.userName}} <i class="fa fa-caret-down"></i></button>
+				  <div id="adminDropdown" class="dropdown-content">
+				  	<a href="#">Admin Menu</a>
+				  	<hr>
+				    <a ui-sref="dashboard"><i class="fa fa-tachometer"></i> Dashboard</a>
+				    <a ui-sref="admin"><i class="fa fa-shield"></i> Admin</a>
+				    <a ng-click="navbar.logOut()" ui-sref="products"><i class='fa fa-sign-out'></i> Logout</a>
+				  </div>
+				</div>
+	    	</li>
 	    </ul>
 	</nav>
 	<div ui-view></div>

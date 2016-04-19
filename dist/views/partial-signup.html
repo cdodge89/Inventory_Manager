@@ -1,11 +1,11 @@
 <div class="container form-container">
 	<h3>Sign Up</h3>
 	<form>
-		<div><input type="text" placeholder="First Name"></div>
-		<div><input type="text" placeholder="Last Name"></div>
-		<div><input type="email" placeholder="example@service.com"></div>
-		<div><input type="password" placeholder="password"></div>
-		<div><input type="password" placeholder="verify password"></div>
-		<input type="submit">
+		<div><input ng-model='signup.newUser.firstName' type="text" placeholder="First Name"></div>
+		<div><input ng-model='signup.newUser.lastName' type="text" placeholder="Last Name"></div>
+		<div><input ng-model='signup.newUser.email' type="email" placeholder="example@service.com"></div>
+		<div><input ng-model='signup.newUser.password1' type="password" placeholder="password"></div>
+		<div><input ng-model='signup.newUser.password2' type="password" placeholder="verify password"></div>
+		<div class="btn btn-purchase" ng-click="signup.submitNewUser(signup.newUser)">Submit</div>
 	</form>
 </div>

@@ -1,8 +1,8 @@
 <div class="container form-container">
 	<h3>Login</h3>
 	<form>
-		<div><input type="email" placeholder="example@service.com"></div>
-		<div><input type="password" placeholder="password"></div>
-		<input type="submit">
+		<div><input ng-model="login.user.email" type="email" placeholder="example@service.com"></div>
+		<div><input ng-model="login.user.password" type="password" placeholder="password"></div>
+		<div class="btn btn-purchase" ng-click="login.submitUserForLogin(login.user)">Login</div>
 	</form>
 </div>

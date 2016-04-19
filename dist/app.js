@@ -45094,8 +45094,230 @@ angular.module('ui.router.state')
   .filter('isState', $IsStateFilter)
   .filter('includedByState', $IncludedByStateFilter);
 })(window, window.angular);
+(function (root, factory) {
+  'use strict';
+
+  if (typeof define === 'function' && define.amd) {
+    define(['angular'], factory);
+  } else if (root.hasOwnProperty('angular')) {
+    // Browser globals (root is window), we don't register it.
+    factory(root.angular);
+  } else if (typeof exports === 'object') {
+    module.exports = factory(require('angular'));
+  }
+}(this , function (angular) {
+    'use strict';
+
+    // In cases where Angular does not get passed or angular is a truthy value
+    // but misses .module we can fall back to using window.
+    angular = (angular && angular.module ) ? angular : window.angular;
+
+    /**
+     * @ngdoc overview
+     * @name ngStorage
+     */
+
+    return angular.module('ngStorage', [])
+
+    /**
+     * @ngdoc object
+     * @name ngStorage.$localStorage
+     * @requires $rootScope
+     * @requires $window
+     */
+
+    .provider('$localStorage', _storageProvider('localStorage'))
+
+    /**
+     * @ngdoc object
+     * @name ngStorage.$sessionStorage
+     * @requires $rootScope
+     * @requires $window
+     */
+
+    .provider('$sessionStorage', _storageProvider('sessionStorage'));
+
+    function _storageProvider(storageType) {
+        return function () {
+          var storageKeyPrefix = 'ngStorage-';
+
+          this.setKeyPrefix = function (prefix) {
+            if (typeof prefix !== 'string') {
+              throw new TypeError('[ngStorage] - ' + storageType + 'Provider.setKeyPrefix() expects a String.');
+            }
+            storageKeyPrefix = prefix;
+          };
+
+          var serializer = angular.toJson;
+          var deserializer = angular.fromJson;
+
+          this.setSerializer = function (s) {
+            if (typeof s !== 'function') {
+              throw new TypeError('[ngStorage] - ' + storageType + 'Provider.setSerializer expects a function.');
+            }
+
+            serializer = s;
+          };
+
+          this.setDeserializer = function (d) {
+            if (typeof d !== 'function') {
+              throw new TypeError('[ngStorage] - ' + storageType + 'Provider.setDeserializer expects a function.');
+            }
+
+            deserializer = d;
+          };
+
+          // Note: This is not very elegant at all.
+          this.get = function (key) {
+            return deserializer(window[storageType].getItem(storageKeyPrefix + key));
+          };
+
+          // Note: This is not very elegant at all.
+          this.set = function (key, value) {
+            return window[storageType].setItem(storageKeyPrefix + key, serializer(value));
+          };
+
+          this.$get = [
+              '$rootScope',
+              '$window',
+              '$log',
+              '$timeout',
+              '$document',
+
+              function(
+                  $rootScope,
+                  $window,
+                  $log,
+                  $timeout,
+                  $document
+              ){
+                function isStorageSupported(storageType) {
+
+                    // Some installations of IE, for an unknown reason, throw "SCRIPT5: Error: Access is denied"
+                    // when accessing window.localStorage. This happens before you try to do anything with it. Catch
+                    // that error and allow execution to continue.
+
+                    // fix 'SecurityError: DOM Exception 18' exception in Desktop Safari, Mobile Safari
+                    // when "Block cookies": "Always block" is turned on
+                    var supported;
+                    try {
+                        supported = $window[storageType];
+                    }
+                    catch (err) {
+                        supported = false;
+                    }
+
+                    // When Safari (OS X or iOS) is in private browsing mode, it appears as though localStorage
+                    // is available, but trying to call .setItem throws an exception below:
+                    // "QUOTA_EXCEEDED_ERR: DOM Exception 22: An attempt was made to add something to storage that exceeded the quota."
+                    if (supported && storageType === 'localStorage') {
+                        var key = '__' + Math.round(Math.random() * 1e7);
+
+                        try {
+                            localStorage.setItem(key, key);
+                            localStorage.removeItem(key);
+                        }
+                        catch (err) {
+                            supported = false;
+                        }
+                    }
+
+                    return supported;
+                }
+
+                // The magic number 10 is used which only works for some keyPrefixes...
+                // See https://github.com/gsklee/ngStorage/issues/137
+                var prefixLength = storageKeyPrefix.length;
+
+                // #9: Assign a placeholder object if Web Storage is unavailable to prevent breaking the entire AngularJS app
+                var webStorage = isStorageSupported(storageType) || ($log.warn('This browser does not support Web Storage!'), {setItem: angular.noop, getItem: angular.noop, removeItem: angular.noop}),
+                    $storage = {
+                        $default: function(items) {
+                            for (var k in items) {
+                                angular.isDefined($storage[k]) || ($storage[k] = angular.copy(items[k]) );
+                            }
+
+                            $storage.$sync();
+                            return $storage;
+                        },
+                        $reset: function(items) {
+                            for (var k in $storage) {
+                                '$' === k[0] || (delete $storage[k] && webStorage.removeItem(storageKeyPrefix + k));
+                            }
+
+                            return $storage.$default(items);
+                        },
+                        $sync: function () {
+                            for (var i = 0, l = webStorage.length, k; i < l; i++) {
+                                // #8, #10: `webStorage.key(i)` may be an empty string (or throw an exception in IE9 if `webStorage` is empty)
+                                (k = webStorage.key(i)) && storageKeyPrefix === k.slice(0, prefixLength) && ($storage[k.slice(prefixLength)] = deserializer(webStorage.getItem(k)));
+                            }
+                        },
+                        $apply: function() {
+                            var temp$storage;
+
+                            _debounce = null;
+
+                            if (!angular.equals($storage, _last$storage)) {
+                                temp$storage = angular.copy(_last$storage);
+                                angular.forEach($storage, function(v, k) {
+                                    if (angular.isDefined(v) && '$' !== k[0]) {
+                                        webStorage.setItem(storageKeyPrefix + k, serializer(v));
+                                        delete temp$storage[k];
+                                    }
+                                });
+
+                                for (var k in temp$storage) {
+                                    webStorage.removeItem(storageKeyPrefix + k);
+                                }
+
+                                _last$storage = angular.copy($storage);
+                            }
+                        }
+                    },
+                    _last$storage,
+                    _debounce;
+
+                $storage.$sync();
+
+                _last$storage = angular.copy($storage);
+
+                $rootScope.$watch(function() {
+                    _debounce || (_debounce = $timeout($storage.$apply, 100, false));
+                });
+
+                // #6: Use `$window.addEventListener` instead of `angular.element` to avoid the jQuery-specific `event.originalEvent`
+                $window.addEventListener && $window.addEventListener('storage', function(event) {
+                    if (!event.key) {
+                      return;
+                    }
+
+                    // Reference doc.
+                    var doc = $document[0];
+
+                    if ( (!doc.hasFocus || !doc.hasFocus()) && storageKeyPrefix === event.key.slice(0, prefixLength) ) {
+                        event.newValue ? $storage[event.key.slice(prefixLength)] = deserializer(event.newValue) : delete $storage[event.key.slice(prefixLength)];
+
+                        _last$storage = angular.copy($storage);
+
+                        $rootScope.$apply();
+                    }
+                });
+
+                $window.addEventListener && $window.addEventListener('beforeunload', function() {
+                    $storage.$apply();
+                });
+
+                return $storage;
+              }
+          ];
+      };
+    }
+
+}));
+
 (function(){
-	angular.module('routerApp', ['ui.router']).config(function($stateProvider, $urlRouterProvider){
+	angular.module('routerApp', ['ngStorage','ui.router']).config(function($stateProvider, $urlRouterProvider){
 		$urlRouterProvider.otherwise('/products');
 
 		$stateProvider
@@ -45126,29 +45348,82 @@ angular.module('ui.router.state')
 		.state('signup',{
 			url:'/signup',
 			templateUrl: 'views/partial-signup',
-			controller: 'SignupController as signup'
+			controller: 'SignupController as signup',
+			onEnter: function($localStorage, $location){
+				if($localStorage.token){
+					$location.path('products');
+				}
+			}
 		})
 		.state('login',{
 			url:'/login',
 			templateUrl: 'views/partial-login',
-			controller: 'LoginController as login'
+			controller: 'LoginController as login',
+			onEnter: function($localStorage, $location){
+				if($localStorage.token){
+					$location.path('products');
+				}
+			}
+		})
+		.state('purchase',{
+			url: '/purchase',
+			templateUrl: 'views/partial-purchase',
+			controller: 'PurchaseController as purchase'			
+		})
+		.state('admin',{
+			url: '/admin',
+			templateUrl: 'views/partial-admin',
+			controller: 'AdminController as admin'
+		})
+		.state('dashboard',{
+			url: '/dashboard',
+			templateUrl: 'views/partial-dashboard',
+			controller: 'DashboardController as dashboard'			
 		});
-	});
+	})
+	.config(['$httpProvider', function ($httpProvider) {
+		$httpProvider.defaults.useXDomain = true;
+
+		delete $httpProvider.defaults.headers.common['X-Requested-With'];
+
+		$httpProvider.interceptors.push(['$q', '$location', '$localStorage', function ($q, $location, $localStorage) {
+			return {
+				'request': function (config) {
+					config.headers = config.headers || {};
+
+					if ($localStorage.token) {
+						config.headers.Authorization = $localStorage.token;
+						config.headers['Access-Control-Allow-Origin'] = '*';
+						config.headers['Content-Type'] = 'application/json';
+					}
+					console.log('config ',config)
+					return config;
+				},
+				'responseError': function (response) {
+					if([401].indexOf(response.status)){
+						delete $localStorage.token;
+						$location.path('/login'); //YOU MIGHT WANT TO CHANGE THIS ROUTE
+					}
+					return $q.reject(response);
+				}
+			};
+		}]);
+	}]);
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('ProductsController', ['Item', 'getProducts', function(Item, getProducts){
-			var vm = this;
-			//bound variables
-			vm.currentProduct = null;
-			vm.currentProductIndex = null;
-			vm.list = getProducts;
+		.controller('AdminController',[function(){
 
-			//bound functions
-			
-			//bound function implementation
-			
-		}])
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
+		.controller('DashboardController',[function(){
+
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
 		.controller('DetailsController', ['Item', 'getProducts', '$stateParams', function(Item, getProducts, $stateParams){
 			var vm = this;
 			var id = $stateParams.productId;
@@ -45169,30 +45444,291 @@ angular.module('ui.router.state')
 				return null;
 			}
 			
-		}])
-		.controller('SignupController',[function(){
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
+		.controller('LoginController',['Login', 'Auth', function(Login, Auth){
+			var vm = this;
 
-		}])
-		.controller('LoginController',[function(){
+
+			vm.submitUserForLogin = submitUserForLogin;
+
+			function submitUserForLogin(user){
+				console.log('User submitted');
+				if(user.email && user.password){
+					Login.postUser(user).then(function(response){
+						console.log(response.data);
+					});
+				}
+			}
+
 			
 		}]);
 })();
-
 (function(){
 	angular.module('routerApp')
-		.factory('Item', ['$http', item]);
+		.controller('NavbarController', ['Auth', 'Orders', function(Auth, Orders){
+			var vm = this;
 
-		function item($http){
-			service = {
-				get:get
+			vm.isLoggedIn = isLoggedIn;
+			vm.logOut = logOut;
+			vm.userDrop = userDrop;
+			vm.adminDrop = adminDrop;
+			vm.userName = Auth.getUser().name; //this doesn't actually show until I reload the page after loggin in, and if I log out and log in as a new user, it shows the old name
+			vm.getUsersOrders = getUsersOrders;
+			vm.isAdmin = isAdmin;
+
+			function isLoggedIn(){
+				vm.userName = Auth.getUser().name;
+				return Auth.checkLoggedIn();
 			}
 
-			return service;
-
-			function get(){
-				return $http.get("http://wta-inventorybackend.herokuapp.com/api/v1/product")
+			function logOut(){
+				Auth.logOut();
 			}
+
+			function userDrop() {
+			    document.getElementById("userDropdown").classList.toggle("show");
+			}
+
+			function adminDrop() {
+			    document.getElementById("adminDropdown").classList.toggle("show");
+			}
+
+			function getUsersOrders(){
+				var id = Auth.getUser().id;
+				Orders.get(id).then(function(response){
+					console.log(response.data);
+				});
+			}
+
+			function isAdmin(){
+				console.log('admin', Auth.isAdmin());
+				return Auth.isAdmin();
+			}
+
+// Close the dropdown menu if the user clicks outside of it
+			window.onclick = function(event) {
+			  if (!event.target.matches('.dropbtn')) {
+
+			    var dropdowns = document.getElementsByClassName("dropdown-content");
+			    var i;
+			    for (i = 0; i < dropdowns.length; i++) {
+			      var openDropdown = dropdowns[i];
+			      if (openDropdown.classList.contains('show')) {
+			        openDropdown.classList.remove('show');
+			      }
+			    }
+			  }
+			}
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
+		.controller('ProductsController', ['Item', 'getProducts', function(Item, getProducts){
+			var vm = this;
+			//bound variables
+			vm.currentProduct = null;
+			vm.currentProductIndex = null;
+			vm.list = getProducts;
+
+			//bound functions
+			
+			//bound function implementation
+			
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
+		.controller('PurchaseController',[function(){
+
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
+		.controller('SignupController',['Signup', 'Auth', function(Signup, Auth){
+			var vm = this;
+			vm.newUser = {
+				firstName: null,
+				lastName: null,
+				email: null,
+				password1: null,
+				password2: null
+			};
+
+			vm.submitNewUser = submitNewUser;
+
+			function submitNewUser(newUser){
+				var user = {};
+				user.email = newUser.email;
+				user.password = newUser.password1;
+				user.fName = newUser.firstName;
+				user.lName = newUser.lastName;
+				if (newUser.password1 === newUser.password2 && newUser.email && newUser.firstName && newUser.lastName && newUser.password1){
+					Signup.postNewUser(user).then(function(response){
+						console.log(response.data);
+					});
+				} else if(newUser.password1 !== newUser.password2) {
+					alert("Passwords Do Not Match");
+				} else {
+					alert("Please fill out the whole form");
+				}
+			}
+		}]);
+})();
+(function(){
+	angular.module('routerApp').factory('Auth',auth);
+
+	auth.$inject = ['$localStorage', '$location'];
+	function auth($localStorage, $location){
+	//decode JWT and translate to readable code
+		service = {
+			urlBase64Decode: urlBase64Decode,
+			getClaimsFromToken: getClaimsFromToken,
+			successAuth: successAuth,
+      checkLoggedIn: checkLoggedIn,
+      logOut: logOut,
+      getUser: getUser,
+      isAdmin: isAdmin
 		}
 
+		return service;
+
+		function urlBase64Decode(str) {
+           var output = str.replace('-', '+').replace('_', '/');
+           switch (output.length % 4) {
+               case 0:
+                   break;
+               case 2:
+                   output += '==';
+                   break;
+               case 3:
+                   output += '=';
+                   break;
+               default:
+                   throw 'Illegal base64url string!';
+           }
+           return window.atob(output);
+       }
+
+		//get usable information from token (like user’s name and id)
+       function getClaimsFromToken() {
+           var token = $localStorage.token;
+           var user = {};
+           if (typeof token !== 'undefined') {
+               var encoded = token.split('.')[1];
+               user = JSON.parse(urlBase64Decode(encoded));
+           }
+           return user;
+       }
+
+		//on successfully authenticating user, save the token
+		function successAuth(res) {
+			console.log('success - auth');
+			$localStorage.token = res.data.token;
+			tokenClaims = getClaimsFromToken();
+      $location.path('/products')
+		}
+
+    function checkLoggedIn(){
+      if ($localStorage.token){
+        console.log('logged in');
+        return true
+      } else{
+        return false;
+      }
+    }
+
+    function logOut(){
+      console.log('success - logout');
+        delete $localStorage.token;
+    }
+
+    function getUser(){
+      var user = getClaimsFromToken();
+      console.log('user ', user);
+      return user;
+    }
+
+    function isAdmin(){
+      var user = getClaimsFromToken();
+      return user.role === 'admin';
+    }
+	}
+})();
+(function(){
+	angular.module('routerApp').factory('Item',item);
+	
+	item.$inject = ['$http'];
+	function item($http){
+		service = {
+			get:get
+		};
+
+		return service;
+
+		function get(){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product');
+		}
+	}
+})();
+(function(){
+	angular.module('routerApp').factory('Login',login);
+
+	login.$inject = ['$http', 'Auth'];
+	function login($http, Auth){
+		service = {
+			postUser: postUser,
+		}
+
+		return service;
+
+		function postUser(user){
+			return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/login', user).then(function(response){
+				Auth.successAuth(response);
+				return response;
+			});
+		}
+	}
+})();
+(function(){
+	angular.module('routerApp').factory('Orders', orders);
+
+	orders.$inject = ['$http'];
+	function orders($http){
+		service = {
+			get: get
+		};
+
+		return service;
+
+		function get(userId){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/'+userId+'/orders');
+		}
+
+		function getAll(){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
+		}
+	}
+})();
+(function(){
+	angular.module('routerApp').factory('Signup',signup);
+
+	signup.$inject = ['$http', 'Auth'];
+	function signup($http, Auth){
+		service = {
+			postNewUser: postNewUser
+		};	
+
+		return service;
+
+		function postNewUser(newUser){
+			return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/signup', newUser).then(function(response){
+				Auth.successAuth(response);
+				return response;
+			});
+		}
+	}
 })();
 //# sourceMappingURL=app.js.map
