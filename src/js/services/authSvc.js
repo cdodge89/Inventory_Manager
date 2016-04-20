@@ -4,7 +4,7 @@
 	auth.$inject = ['$localStorage', '$location'];
 	function auth($localStorage, $location){
 	//decode JWT and translate to readable code
-		service = {
+		var service = {
 			urlBase64Decode: urlBase64Decode,
 			getClaimsFromToken: getClaimsFromToken,
 			successAuth: successAuth,
@@ -48,7 +48,7 @@
 		function successAuth(res) {
 			console.log('success - auth');
 			$localStorage.token = res.data.token;
-			tokenClaims = getClaimsFromToken();
+			var tokenClaims = getClaimsFromToken();
       $location.path('/products')
 		}
 
@@ -57,6 +57,7 @@
         console.log('logged in');
         return true
       } else{
+        console.log('user not logged in');
         return false;
       }
     }
@@ -68,7 +69,7 @@
 
     function getUser(){
       var user = getClaimsFromToken();
-      console.log('user ', user);
+      //console.log('user ', user);
       return user;
     }
 

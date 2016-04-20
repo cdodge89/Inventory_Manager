@@ -4,6 +4,7 @@
 			var vm = this;
 			var id = $stateParams.productId;
 			id = +id;
+			vm.id = id
 			//bound variables
 			vm.list = getProducts;
 			vm.currentProduct = vm.list[findById(id, vm.list)];

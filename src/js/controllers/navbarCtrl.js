@@ -10,6 +10,7 @@
 			vm.userName = Auth.getUser().name; //this doesn't actually show until I reload the page after loggin in, and if I log out and log in as a new user, it shows the old name
 			vm.getUsersOrders = getUsersOrders;
 			vm.isAdmin = isAdmin;
+			// vm.getAllOrders = getAllOrders;
 
 			function isLoggedIn(){
 				vm.userName = Auth.getUser().name;
@@ -35,8 +36,14 @@
 				});
 			}
 
+			// function getAllOrders(){
+			// 	Orders.getAll().then(function(response){
+			// 		console.log(response.data);
+			// 	});
+			// }
+
 			function isAdmin(){
-				console.log('admin', Auth.isAdmin());
+				//console.log('admin', Auth.isAdmin());
 				return Auth.isAdmin();
 			}
 

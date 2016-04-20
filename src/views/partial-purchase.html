@@ -1,1 +1,11 @@
-<h1>purchase</h1>
+<div class="container form-container">
+	<form>
+		<h4>{{objToPurchase.currentProduct.name}}</h4>
+		<h4>{{objToPurchase.currentProduct.price}}</h4>
+		<div><input type="number" min="0" step ="1" placeholder="How many?" ng-model="objToPurchase.currentTransaction.subTransactions[0].qty"></div>
+		<div>subtotal: <span>{{objToPurchase.currentProduct.price * objToPurchase.currentTransaction.subTransactions[0].qty | currency}}</span></div>
+		<hr>
+		<div class="btn btn-purchase" ng-click="objToPurchase.submitTransaction(objToPurchase.currentTransaction)">Purchase</div>
+		<div class="btn" ui-sref="products">Keep Shopping</div>
+	</form>
+</div>

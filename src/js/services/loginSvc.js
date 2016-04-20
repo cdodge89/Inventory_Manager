@@ -3,7 +3,7 @@
 
 	login.$inject = ['$http', 'Auth'];
 	function login($http, Auth){
-		service = {
+		var service = {
 			postUser: postUser,
 		}
 

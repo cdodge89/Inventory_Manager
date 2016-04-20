@@ -3,7 +3,7 @@
 	
 	item.$inject = ['$http'];
 	function item($http){
-		service = {
+		var service = {
 			get:get
 		};
 

@@ -48,9 +48,21 @@
 			}
 		})
 		.state('purchase',{
-			url: '/purchase',
+			url: '/purchase/:productId',
 			templateUrl: 'views/partial-purchase',
-			controller: 'PurchaseController as purchase'			
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token){
+					$location.path('login');
+				}
+			},
+			resolve: {
+				getProductsForPurchase: function(Item){
+					return Item.get().then(function(response){
+						return response.data;
+					});
+				}
+			},
+			controller: 'PurchaseController as objToPurchase'			
 		})
 		.state('admin',{
 			url: '/admin',

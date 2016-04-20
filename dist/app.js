@@ -45366,9 +45366,21 @@ angular.module('ui.router.state')
 			}
 		})
 		.state('purchase',{
-			url: '/purchase',
+			url: '/purchase/:productId',
 			templateUrl: 'views/partial-purchase',
-			controller: 'PurchaseController as purchase'			
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token){
+					$location.path('login');
+				}
+			},
+			resolve: {
+				getProductsForPurchase: function(Item){
+					return Item.get().then(function(response){
+						return response.data;
+					});
+				}
+			},
+			controller: 'PurchaseController as objToPurchase'			
 		})
 		.state('admin',{
 			url: '/admin',
@@ -45428,6 +45440,7 @@ angular.module('ui.router.state')
 			var vm = this;
 			var id = $stateParams.productId;
 			id = +id;
+			vm.id = id
 			//bound variables
 			vm.list = getProducts;
 			vm.currentProduct = vm.list[findById(id, vm.list)];
@@ -45478,6 +45491,7 @@ angular.module('ui.router.state')
 			vm.userName = Auth.getUser().name; //this doesn't actually show until I reload the page after loggin in, and if I log out and log in as a new user, it shows the old name
 			vm.getUsersOrders = getUsersOrders;
 			vm.isAdmin = isAdmin;
+			// vm.getAllOrders = getAllOrders;
 
 			function isLoggedIn(){
 				vm.userName = Auth.getUser().name;
@@ -45503,8 +45517,14 @@ angular.module('ui.router.state')
 				});
 			}
 
+			// function getAllOrders(){
+			// 	Orders.getAll().then(function(response){
+			// 		console.log(response.data);
+			// 	});
+			// }
+
 			function isAdmin(){
-				console.log('admin', Auth.isAdmin());
+				//console.log('admin', Auth.isAdmin());
 				return Auth.isAdmin();
 			}
 
@@ -45541,8 +45561,55 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('PurchaseController',[function(){
+		.controller('PurchaseController',['$location','Item', 'getProductsForPurchase', '$stateParams', 'Transaction','Auth', function($location,Item, getProductsForPurchase, $stateParams, Transaction,Auth){
+			var vm = this;
+			var id = $stateParams.productId;
+			console.log('stateparams',$stateParams);
+			id = +id;
+			//bound variables
+			vm.list = getProductsForPurchase;
+			vm.currentProduct = vm.list[findById(id, vm.list)];
+			vm.currentTransaction = {
+				type: {
+					id: 1,
+					description: 'Sale'
+				},
+				date: (new Date()),
+				notes: null,
+				altersId: null,
+				subTransactions: [
+					{
+						id: $stateParams.productId,
+						qty: 0
+					}
+					
+				]
+			};
+			console.log('current ', vm.currentTransaction);
 
+			//bound functions
+			vm.submitTransaction = submitTransaction;
+
+			// bound function declarations
+			function submitTransaction(transactionObj){
+				if(Auth.checkLoggedIn()){
+					Transaction.post(transactionObj).then(function(response){
+						console.log(response.data);
+					});
+				} else{
+					$location.path('login');
+				}
+			}
+
+			//helper functions
+			function findById(id, productArr){
+				for(var i = 0; i < productArr.length; i++){
+					if(productArr[i].id === id){
+						return i;
+					}
+				}
+				return null;
+			}
 		}]);
 })();
 (function(){
@@ -45583,7 +45650,7 @@ angular.module('ui.router.state')
 	auth.$inject = ['$localStorage', '$location'];
 	function auth($localStorage, $location){
 	//decode JWT and translate to readable code
-		service = {
+		var service = {
 			urlBase64Decode: urlBase64Decode,
 			getClaimsFromToken: getClaimsFromToken,
 			successAuth: successAuth,
@@ -45627,7 +45694,7 @@ angular.module('ui.router.state')
 		function successAuth(res) {
 			console.log('success - auth');
 			$localStorage.token = res.data.token;
-			tokenClaims = getClaimsFromToken();
+			var tokenClaims = getClaimsFromToken();
       $location.path('/products')
 		}
 
@@ -45636,6 +45703,7 @@ angular.module('ui.router.state')
         console.log('logged in');
         return true
       } else{
+        console.log('user not logged in');
         return false;
       }
     }
@@ -45647,7 +45715,7 @@ angular.module('ui.router.state')
 
     function getUser(){
       var user = getClaimsFromToken();
-      console.log('user ', user);
+      //console.log('user ', user);
       return user;
     }
 
@@ -45658,11 +45726,25 @@ angular.module('ui.router.state')
 	}
 })();
 (function(){
+	angular.module('routerApp').factory('Cart', cart);
+
+	cart.$inject=['$http']
+	function cart(){
+		var service = {
+			postPurchase: postPurchase,
+			purchaseObj: {}
+		};
+
+		return service;
+	}
+
+})();
+(function(){
 	angular.module('routerApp').factory('Item',item);
 	
 	item.$inject = ['$http'];
 	function item($http){
-		service = {
+		var service = {
 			get:get
 		};
 
@@ -45678,7 +45760,7 @@ angular.module('ui.router.state')
 
 	login.$inject = ['$http', 'Auth'];
 	function login($http, Auth){
-		service = {
+		var service = {
 			postUser: postUser,
 		}
 
@@ -45697,19 +45779,21 @@ angular.module('ui.router.state')
 
 	orders.$inject = ['$http'];
 	function orders($http){
-		service = {
-			get: get
+		var service = {
+			get: get,
+			// getAll: getAll
 		};
 
 		return service;
 
-		function get(userId){
-			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/'+userId+'/orders');
+		function get(){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
+			//endpoint doesn't work yet
 		}
 
-		function getAll(){
-			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
-		}
+		// function getAll(){
+		// 	return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
+		// }
 	}
 })();
 (function(){
@@ -45717,7 +45801,7 @@ angular.module('ui.router.state')
 
 	signup.$inject = ['$http', 'Auth'];
 	function signup($http, Auth){
-		service = {
+		var service = {
 			postNewUser: postNewUser
 		};	
 
@@ -45730,5 +45814,21 @@ angular.module('ui.router.state')
 			});
 		}
 	}
+})();
+(function(){
+	angular.module('routerApp').factory('Transaction', transaction);
+
+		transaction.$inject = ['$http'];
+		function transaction($http){
+			var service = {
+				post: post
+			};
+
+			return service;
+
+			function post(transactionObj){
+				return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/transaction', transactionObj);
+			}
+		}
 })();
 //# sourceMappingURL=app.js.map

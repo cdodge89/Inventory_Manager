@@ -3,7 +3,7 @@
 
 	signup.$inject = ['$http', 'Auth'];
 	function signup($http, Auth){
-		service = {
+		var service = {
 			postNewUser: postNewUser
 		};	
 

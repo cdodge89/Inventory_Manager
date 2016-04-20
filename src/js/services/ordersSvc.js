@@ -3,18 +3,20 @@
 
 	orders.$inject = ['$http'];
 	function orders($http){
-		service = {
-			get: get
+		var service = {
+			get: get,
+			// getAll: getAll
 		};
 
 		return service;
 
-		function get(userId){
-			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/'+userId+'/orders');
+		function get(){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
+			//endpoint doesn't work yet
 		}
 
-		function getAll(){
-			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
-		}
+		// function getAll(){
+		// 	return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
+		// }
 	}
 })();
