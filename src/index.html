@@ -15,17 +15,17 @@
 	    	<!-- <li ng-show="navbar.isLoggedIn()"><a ui-sref="products" ng-click="navbar.logOut()">Logout</a></li> -->
 	    	<li ng-show="navbar.isLoggedIn() && !navbar.isAdmin()">
 	    		<div class="drpdwn">
-				  <button ng-click="navbar.userDrop()" class="dropbtn">{{navbar.userName}} <i class="fa fa-caret-down"></i></button>
+				  <div ng-click="navbar.userDrop()" class="dropbtn">{{navbar.userName}} <i ng-click="navbar.userDrop()" class="fa fa-caret-down"></i></div>
 				  <div id="userDropdown" class="dropdown-content">
-				    <a ui-sref="#"><i class="fa fa-shopping-cart"></i> Shopping Cart</a>
-				    <a ui-sref="#" ng-click="navbar.getUsersOrders()"><i class="fa fa-history"></i> Order History</a>
+				    <a ui-sref="cart"><i class="fa fa-shopping-cart"></i> Shopping Cart</a>
+				    <a ui-sref="order-history"><i class="fa fa-history"></i> Order History</a>
 				    <a ng-click="navbar.logOut()" ui-sref="products"><i class='fa fa-sign-out'></i> Logout</a>
 				  </div>
 				</div>
 	    	</li>
 	    	<li ng-show="navbar.isLoggedIn() && navbar.isAdmin()">
 	    		<div class="drpdwn">
-				  <button ng-click="navbar.adminDrop()" class="dropbtn">{{navbar.userName}} <i class="fa fa-caret-down"></i></button>
+				  <div ng-click="navbar.adminDrop()" class="dropbtn">{{navbar.userName}} <i ng-click="navbar.adminDrop()" class="fa fa-caret-down"></i></div>
 				  <div id="adminDropdown" class="dropdown-content">
 				  	<a href="#">Admin Menu</a>
 				  	<hr>

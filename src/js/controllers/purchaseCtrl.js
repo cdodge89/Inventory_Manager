@@ -1,6 +1,6 @@
 (function(){
 	angular.module('routerApp')
-		.controller('PurchaseController',['$location','Item', 'getProductsForPurchase', '$stateParams', 'Transaction','Auth', function($location,Item, getProductsForPurchase, $stateParams, Transaction,Auth){
+		.controller('PurchaseController',['Cart' ,'$location','Item', 'getProductsForPurchase', '$stateParams','Auth', function(Cart ,$location,Item, getProductsForPurchase, $stateParams, Auth){
 			var vm = this;
 			var id = $stateParams.productId;
 			console.log('stateparams',$stateParams);
@@ -9,32 +9,19 @@
 			vm.list = getProductsForPurchase;
 			vm.currentProduct = vm.list[findById(id, vm.list)];
 			vm.currentTransaction = {
-				type: {
-					id: 1,
-					description: 'Sale'
-				},
-				date: (new Date()),
-				notes: null,
-				altersId: null,
-				subTransactions: [
-					{
-						id: $stateParams.productId,
-						qty: 0
-					}
-					
-				]
+				id: $stateParams.productId,
+				qty: 0
 			};
 			console.log('current ', vm.currentTransaction);
 
 			//bound functions
-			vm.submitTransaction = submitTransaction;
+			vm.addToCart = addToCart;
 
 			// bound function declarations
-			function submitTransaction(transactionObj){
+			function addToCart(transactionObj){
 				if(Auth.checkLoggedIn()){
-					Transaction.post(transactionObj).then(function(response){
-						console.log(response.data);
-					});
+					Cart.cart.subTransactions.push(vm.currentTransaction);
+					console.log('Cart ', Cart.cart)
 				} else{
 					$location.path('login');
 				}

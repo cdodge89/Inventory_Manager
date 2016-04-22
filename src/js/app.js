@@ -72,7 +72,43 @@
 		.state('dashboard',{
 			url: '/dashboard',
 			templateUrl: 'views/partial-dashboard',
+			resolve: {
+				getAllTransactions: function(Transaction){
+					return Transaction.get().then(function(response){
+						return response.data;
+					});
+				},
+				// getSummary: function(Item){
+				// 	return Item.getSummary().then(function(response){
+				// 		return response.data;
+				// 	});
+				// }
+			},
 			controller: 'DashboardController as dashboard'			
+		})
+		.state('cart',{
+			url: '/cart',
+			templateUrl: 'views/partial-cart',
+			resolve: {
+				getCartProducts: function(Item){
+					return Item.get().then(function(response){
+						return response.data;
+					});
+				}
+			},
+			controller: 'CartController as cart'
+		})
+		.state('order-history',{
+			url: '/order-history',
+			templateUrl: 'views/partial-order-history',
+			resolve: {
+				getHistory: function(OrderHistory){
+					return OrderHistory.get().then(function(response){
+						return response.data;
+					});
+				}
+			},
+			controller: 'HistoryController as history'
 		});
 	})
 	.config(['$httpProvider', function ($httpProvider) {
