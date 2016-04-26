@@ -8,7 +8,8 @@
 				get: get,
 				getByProd: getByProd,
 				put: put,
-				del: del
+				del: del,
+				getByTransId: getByTransId
 			};
 
 			return service;
@@ -31,6 +32,10 @@
 
 			function del(transId){
 				return $http.delete('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)
+			}
+
+			function getByTransId(transId){
+				return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)
 			}
 		}
 })();

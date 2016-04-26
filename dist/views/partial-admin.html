@@ -1,1 +1,36 @@
 <h1>admin</h1>
+<div class="container cart-container">
+	<!-- <h2>Shopping Cart</h2> -->
+	<ul>
+		<li ng-repeat="item in admin.products" on-finish-render="ngRepeatFinished">
+			<div class="row thumbnail myBtn">
+				<div class="col-md-1">
+					<img class="cart-img" ng-src="{{item.imgThumbnail}}">
+				</div>	
+				<div class="col-md-8">
+					{{item.name}}
+				</div>
+				<!-- <div class="col-md-3">
+					<input type="number" min="0" step="1" ng-model="item.qty"> 
+				</div> -->
+			</div>
+		</li>
+		<!-- <li>
+			<div class="btn btn-purchase">Checkout</div>
+		</li> -->
+	</ul>
+</div>
+
+<!-- Trigger/Open The Modal -->
+<!-- <button id="myBtn">Open Modal</button> -->
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">x</span>
+    <p>{{item.name}}</p>
+  </div>
+
+</div>

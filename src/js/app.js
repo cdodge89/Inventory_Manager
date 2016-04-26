@@ -67,28 +67,50 @@
 		.state('admin',{
 			url: '/admin',
 			templateUrl: 'views/partial-admin',
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token || $localStorage.token.role !== 'admin'){
+					$location.path('products');
+				}
+			},
+			resolve: {
+				getProductsAdmin: function(Item){
+					return Item.get().then(function(response){
+						return response.data;
+					});
+				}
+			},
 			controller: 'AdminController as admin'
 		})
 		.state('dashboard',{
 			url: '/dashboard',
 			templateUrl: 'views/partial-dashboard',
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token || $localStorage.token.role !== 'admin'){
+					$location.path('products');
+				}
+			},
 			resolve: {
 				getAllTransactions: function(Transaction){
 					return Transaction.get().then(function(response){
 						return response.data;
 					});
 				},
-				// getSummary: function(Item){
-				// 	return Item.getSummary().then(function(response){
-				// 		return response.data;
-				// 	});
-				// }
+				getProductSummaries: function(Item){
+					return Item.getProductSummaries().then(function(response){
+						return response.data;
+					});
+				}
 			},
 			controller: 'DashboardController as dashboard'			
 		})
 		.state('cart',{
 			url: '/cart',
 			templateUrl: 'views/partial-cart',
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token || $localStorage.token.role !== 'user'){
+					$location.path('products');
+				}
+			},
 			resolve: {
 				getCartProducts: function(Item){
 					return Item.get().then(function(response){
@@ -101,6 +123,11 @@
 		.state('order-history',{
 			url: '/order-history',
 			templateUrl: 'views/partial-order-history',
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token || $localStorage.token.role !== 'user'){
+					$location.path('products');
+				}
+			},
 			resolve: {
 				getHistory: function(OrderHistory){
 					return OrderHistory.get().then(function(response){
@@ -109,6 +136,18 @@
 				}
 			},
 			controller: 'HistoryController as history'
+		})
+		.state('transaction-details',{
+			url: '/transaction/:transId',
+			templateUrl: 'views/partial-transaction-details',
+			resolve: {
+				getTransactionDetails: ['$stateParams', 'Transaction', function($stateParams, Transaction){
+					return Transaction.getByTransId($stateParams.transId).then(function(response){
+						return response.data;
+					});
+				}]
+			},
+			controller: 'TransactionDetailsController as transaction'
 		});
 	})
 	.config(['$httpProvider', function ($httpProvider) {
@@ -126,7 +165,7 @@
 						config.headers['Access-Control-Allow-Origin'] = '*';
 						config.headers['Content-Type'] = 'application/json';
 					}
-					console.log('config ',config)
+					// console.log('config ',config)
 					return config;
 				},
 				'responseError': function (response) {

@@ -45385,28 +45385,50 @@ angular.module('ui.router.state')
 		.state('admin',{
 			url: '/admin',
 			templateUrl: 'views/partial-admin',
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token || $localStorage.token.role !== 'admin'){
+					$location.path('products');
+				}
+			},
+			resolve: {
+				getProductsAdmin: function(Item){
+					return Item.get().then(function(response){
+						return response.data;
+					});
+				}
+			},
 			controller: 'AdminController as admin'
 		})
 		.state('dashboard',{
 			url: '/dashboard',
 			templateUrl: 'views/partial-dashboard',
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token || $localStorage.token.role !== 'admin'){
+					$location.path('products');
+				}
+			},
 			resolve: {
 				getAllTransactions: function(Transaction){
 					return Transaction.get().then(function(response){
 						return response.data;
 					});
 				},
-				// getSummary: function(Item){
-				// 	return Item.getSummary().then(function(response){
-				// 		return response.data;
-				// 	});
-				// }
+				getProductSummaries: function(Item){
+					return Item.getProductSummaries().then(function(response){
+						return response.data;
+					});
+				}
 			},
 			controller: 'DashboardController as dashboard'			
 		})
 		.state('cart',{
 			url: '/cart',
 			templateUrl: 'views/partial-cart',
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token || $localStorage.token.role !== 'user'){
+					$location.path('products');
+				}
+			},
 			resolve: {
 				getCartProducts: function(Item){
 					return Item.get().then(function(response){
@@ -45419,6 +45441,11 @@ angular.module('ui.router.state')
 		.state('order-history',{
 			url: '/order-history',
 			templateUrl: 'views/partial-order-history',
+			onEnter: function($localStorage, $location){
+				if(!$localStorage.token || $localStorage.token.role !== 'user'){
+					$location.path('products');
+				}
+			},
 			resolve: {
 				getHistory: function(OrderHistory){
 					return OrderHistory.get().then(function(response){
@@ -45427,6 +45454,18 @@ angular.module('ui.router.state')
 				}
 			},
 			controller: 'HistoryController as history'
+		})
+		.state('transaction-details',{
+			url: '/transaction/:transId',
+			templateUrl: 'views/partial-transaction-details',
+			resolve: {
+				getTransactionDetails: ['$stateParams', 'Transaction', function($stateParams, Transaction){
+					return Transaction.getByTransId($stateParams.transId).then(function(response){
+						return response.data;
+					});
+				}]
+			},
+			controller: 'TransactionDetailsController as transaction'
 		});
 	})
 	.config(['$httpProvider', function ($httpProvider) {
@@ -45444,7 +45483,7 @@ angular.module('ui.router.state')
 						config.headers['Access-Control-Allow-Origin'] = '*';
 						config.headers['Content-Type'] = 'application/json';
 					}
-					console.log('config ',config)
+					// console.log('config ',config)
 					return config;
 				},
 				'responseError': function (response) {
@@ -45459,258 +45498,43 @@ angular.module('ui.router.state')
 	}]);
 })();
 (function(){
-	angular.module('routerApp').factory('Auth',auth);
-
-	auth.$inject = ['$localStorage', '$location'];
-	function auth($localStorage, $location){
-	//decode JWT and translate to readable code
-		var service = {
-			urlBase64Decode: urlBase64Decode,
-			getClaimsFromToken: getClaimsFromToken,
-			successAuth: successAuth,
-      checkLoggedIn: checkLoggedIn,
-      logOut: logOut,
-      getUser: getUser,
-      isAdmin: isAdmin
-		}
-
-		return service;
-
-		function urlBase64Decode(str) {
-           var output = str.replace('-', '+').replace('_', '/');
-           switch (output.length % 4) {
-               case 0:
-                   break;
-               case 2:
-                   output += '==';
-                   break;
-               case 3:
-                   output += '=';
-                   break;
-               default:
-                   throw 'Illegal base64url string!';
-           }
-           return window.atob(output);
-       }
-
-		//get usable information from token (like user’s name and id)
-       function getClaimsFromToken() {
-           var token = $localStorage.token;
-           var user = {};
-           if (typeof token !== 'undefined') {
-               var encoded = token.split('.')[1];
-               user = JSON.parse(urlBase64Decode(encoded));
-           }
-           return user;
-       }
-
-		//on successfully authenticating user, save the token
-		function successAuth(res) {
-			console.log('success - auth');
-			$localStorage.token = res.data.token;
-			var tokenClaims = getClaimsFromToken();
-      $location.path('/products')
-		}
-
-    function checkLoggedIn(){
-      if ($localStorage.token){
-        console.log('logged in');
-        return true
-      } else{
-        console.log('user not logged in');
-        return false;
-      }
-    }
-
-    function logOut(){
-      console.log('success - logout');
-        delete $localStorage.token;
-    }
-
-    function getUser(){
-      var user = getClaimsFromToken();
-      //console.log('user ', user);
-      return user;
-    }
-
-    function isAdmin(){
-      var user = getClaimsFromToken();
-      return user.role === 'admin';
-    }
-	}
-})();
-(function(){
-	angular.module('routerApp').factory('Cart', cart);
-
-	cart.$inject=['Transaction']
-	function cart(){
-		var service = {
-			// postPurchase: postPurchase,
-			// addToCart: addToCart,
-			cart: {
-				type:{
-					id: 1,
-					description: 'Sale'
-				},
-				date: new Date(),
-				notes: null,
-				altersId: null,
-				subTransactions: []
-			}
-		};
-
-		return service;
-
-		// function postPurchase(transObj){
-		// 	Transaction.post(transobj).then(function(response){
-		// 		console.log(response.data);
-		// 	});
-		// }
-
-		// function addToCart(transObj){
-		// 	service.cart.subTransactions.push(transObj);
-		// }
-	}
-
-})();
-(function(){
-	angular.module('routerApp').factory('OrderHistory', orderHistory);
-
-	orderHistory.$inject = ['$http'];
-	function orderHistory($http){
-		var service = {
-			get: get
-		}  
-
-		return service;
-
-		function get(){
-			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
-		}
-	}
-})();
-(function(){
-	angular.module('routerApp').factory('Item',item);
-	
-	item.$inject = ['$http'];
-	function item($http){
-		var service = {
-			get:get,
-			getSummary: getSummary
-		};
-
-		return service;
-
-		function get(){
-			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product');
-		}
-
-		function getSummary(){
-			// return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/summary');
-		}
-	}
-})();
-(function(){
-	angular.module('routerApp').factory('Login',login);
-
-	login.$inject = ['$http', 'Auth'];
-	function login($http, Auth){
-		var service = {
-			postUser: postUser,
-		}
-
-		return service;
-
-		function postUser(user){
-			return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/login', user).then(function(response){
-				Auth.successAuth(response);
-				return response;
-			});
-		}
-	}
-})();
-
-(function(){
-	angular.module('routerApp').factory('Orders', orders);
-
-	orders.$inject = ['$http'];
-	function orders($http){
-		var service = {
-			get: get,
-			// getAll: getAll
-		};
-
-		return service;
-
-		function get(){
-			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
-			//endpoint doesn't work yet
-		}
-
-		// function getAll(){
-		// 	return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
-		// }
-	}
-})();
-(function(){
-	angular.module('routerApp').factory('Signup',signup);
-
-	signup.$inject = ['$http', 'Auth'];
-	function signup($http, Auth){
-		var service = {
-			postNewUser: postNewUser
-		};	
-
-		return service;
-
-		function postNewUser(newUser){
-			return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/signup', newUser).then(function(response){
-				Auth.successAuth(response);
-				return response;
-			});
-		}
-	}
-})();
-(function(){
-	angular.module('routerApp').factory('Transaction', transaction);
-
-		transaction.$inject = ['$http'];
-		function transaction($http){
-			var service = {
-				post: post,
-				get: get,
-				getByProd: getByProd,
-				put: put,
-				del: del
-			};
-
-			return service;
-
-			function post(transactionObj){
-				return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/transaction', transactionObj);
-			}
-
-			function get(){
-				return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/transaction');
-			}
-
-			function getByProd(prodId){
-				return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/'+prodId+'/transactions')
-			}
-
-			function put(transId, putObj){
-				return $http.put('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)				
-			}
-
-			function del(transId){
-				return $http.delete('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)
-			}
-		}
-})();
-(function(){
 	angular.module('routerApp')
-		.controller('AdminController',[function(){
+		.controller('AdminController',['Item', 'getProductsAdmin', '$scope', function(Item, getProductsAdmin, $scope){
+			var vm = this;
 
+			vm.products = getProductsAdmin;
+			console.log('prod ', vm.products)
+
+			$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+			    // Get the modal
+				var modal = document.getElementById('myModal');
+
+				// Get the button that opens the modal
+				var btn = document.getElementsByClassName("myBtn");
+				console.log('btns ', btn)
+
+				// Get the <span> element that closes the modal
+				var span = document.getElementsByClassName("close")[0];
+
+				// When the user clicks on the button, open the modal 
+				for(var i = 0; i < btn.length; i++){
+					btn[i].onclick = function() {
+				    	modal.style.display = "block";
+					}
+				}
+
+				// When the user clicks on <span> (x), close the modal
+				span.onclick = function() {
+				    modal.style.display = "none";
+				}
+
+				// When the user clicks anywhere outside of the modal, close it
+				window.onclick = function(event) {
+				    if (event.target == modal) {
+				        modal.style.display = "none";
+				    }
+				}
+			});
 		}]);
 })();
 (function(){
@@ -45756,13 +45580,13 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('DashboardController',['Transaction', 'getAllTransactions', function(Transaction, getAllTransactions){
+		.controller('DashboardController',['Transaction', 'getAllTransactions', 'getProductSummaries', function(Transaction, getAllTransactions, getProductSummaries){
 			var vm = this;
 
 			vm.transactions = getAllTransactions;
 			console.log('trans ', vm.transactions)
-			// vm.summary = getSummary;
-			// console.log('summ ', vm.summary);
+			vm.productSummaries = getProductSummaries;
+			console.log('summ ', vm.productSummaries);
 		}]);
 })();
 (function(){
@@ -45847,12 +45671,6 @@ angular.module('ui.router.state')
 					console.log(response.data);
 				});
 			}
-
-			// function getAllOrders(){
-			// 	Orders.getAll().then(function(response){
-			// 		console.log(response.data);
-			// 	});
-			// }
 
 			function isAdmin(){
 				//console.log('admin', Auth.isAdmin());
@@ -45970,5 +45788,300 @@ angular.module('ui.router.state')
 				}
 			}
 		}]);
+})();
+(function(){
+	angular.module('routerApp')
+		.controller('TransactionDetailsController', ['Item', 'getTransactionDetails', '$stateParams', function(Item, getTransactionDetails, $stateParams){
+			var vm = this;
+
+			vm.transaction = getTransactionDetails;
+			vm.subTransactions = vm.transaction.subTransactions;
+			console.log(vm.transaction);
+
+
+			//helper functions
+			function findById(id, productArr){
+				for(var i = 0; i < productArr.length; i++){
+					if(productArr[i].id === id){
+						return i;
+					}
+				}
+				return null;
+			}
+			
+		}]);
+})();
+var module = angular.module('routerApp')
+    .directive('onFinishRender', function ($timeout) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            if (scope.$last === true) {
+                $timeout(function () {
+                    scope.$emit('ngRepeatFinished');
+                });
+            }
+        }
+    }
+});
+(function(){
+	angular.module('routerApp').factory('Auth',auth);
+
+	auth.$inject = ['$localStorage', '$location'];
+	function auth($localStorage, $location){
+	//decode JWT and translate to readable code
+		var service = {
+			urlBase64Decode: urlBase64Decode,
+			getClaimsFromToken: getClaimsFromToken,
+			successAuth: successAuth,
+      checkLoggedIn: checkLoggedIn,
+      logOut: logOut,
+      getUser: getUser,
+      isAdmin: isAdmin
+		}
+
+		return service;
+
+		function urlBase64Decode(str) {
+           var output = str.replace('-', '+').replace('_', '/');
+           switch (output.length % 4) {
+               case 0:
+                   break;
+               case 2:
+                   output += '==';
+                   break;
+               case 3:
+                   output += '=';
+                   break;
+               default:
+                   throw 'Illegal base64url string!';
+           }
+           return window.atob(output);
+       }
+
+		//get usable information from token (like user’s name and id)
+       function getClaimsFromToken() {
+           var token = $localStorage.token;
+           var user = {};
+           if (typeof token !== 'undefined') {
+               var encoded = token.split('.')[1];
+               user = JSON.parse(urlBase64Decode(encoded));
+           }
+           return user;
+       }
+
+		//on successfully authenticating user, save the token
+		function successAuth(res) {
+			// console.log('success - auth');
+			$localStorage.token = res.data.token;
+			var tokenClaims = getClaimsFromToken();
+      // console.log('token ', tokenClaims);
+      $location.path('/products')
+		}
+
+    function checkLoggedIn(){
+      if ($localStorage.token){
+        // console.log('logged in');
+        return true
+      } else{
+        // console.log('user not logged in');
+        return false;
+      }
+    }
+
+    function logOut(){
+      // console.log('success - logout');
+        delete $localStorage.token;
+    }
+
+    function getUser(){
+      var user = getClaimsFromToken();
+      //console.log('user ', user);
+      return user;
+    }
+
+    function isAdmin(){
+      var user = getClaimsFromToken();
+      return user.role === 'admin';
+    }
+	}
+})();
+(function(){
+	angular.module('routerApp').factory('Cart', cart);
+
+	cart.$inject=['Transaction']
+	function cart(){
+		var service = {
+			// postPurchase: postPurchase,
+			// addToCart: addToCart,
+			cart: {
+				type:{
+					id: 1,
+					description: 'Sale'
+				},
+				date: new Date(),
+				notes: null,
+				altersId: null,
+				subTransactions: []
+			}
+		};
+
+		return service;
+
+		// function postPurchase(transObj){
+		// 	Transaction.post(transobj).then(function(response){
+		// 		console.log(response.data);
+		// 	});
+		// }
+
+		// function addToCart(transObj){
+		// 	service.cart.subTransactions.push(transObj);
+		// }
+	}
+
+})();
+(function(){
+	angular.module('routerApp').factory('OrderHistory', orderHistory);
+
+	orderHistory.$inject = ['$http'];
+	function orderHistory($http){
+		var service = {
+			get: get
+		}  
+
+		return service;
+
+		function get(){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
+		}
+	}
+})();
+(function(){
+	angular.module('routerApp').factory('Item',item);
+	
+	item.$inject = ['$http'];
+	function item($http){
+		var service = {
+			get:get,
+			getProductSummaries: getProductSummaries,
+			post: post
+		};
+
+		return service;
+
+		function get(){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product');
+		}
+
+		function post(newProd){
+			return $https.post('http://wta-inventorybackend.herokuapp.com/api/v1/product', newProd);
+		}
+
+		function getProductSummaries(){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/summary');
+		}
+	}
+})();
+(function(){
+	angular.module('routerApp').factory('Login',login);
+
+	login.$inject = ['$http', 'Auth'];
+	function login($http, Auth){
+		var service = {
+			postUser: postUser,
+		}
+
+		return service;
+
+		function postUser(user){
+			return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/login', user).then(function(response){
+				Auth.successAuth(response);
+				return response;
+			});
+		}
+	}
+})();
+
+(function(){
+	angular.module('routerApp').factory('Orders', orders);
+
+	orders.$inject = ['$http'];
+	function orders($http){
+		var service = {
+			get: get,
+			// getAll: getAll
+		};
+
+		return service;
+
+		function get(){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
+			//endpoint doesn't work yet
+		}
+
+		// function getAll(){
+		// 	return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/user/orders');
+		// }
+	}
+})();
+(function(){
+	angular.module('routerApp').factory('Signup',signup);
+
+	signup.$inject = ['$http', 'Auth'];
+	function signup($http, Auth){
+		var service = {
+			postNewUser: postNewUser
+		};	
+
+		return service;
+
+		function postNewUser(newUser){
+			return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/signup', newUser).then(function(response){
+				Auth.successAuth(response);
+				return response;
+			});
+		}
+	}
+})();
+(function(){
+	angular.module('routerApp').factory('Transaction', transaction);
+
+		transaction.$inject = ['$http'];
+		function transaction($http){
+			var service = {
+				post: post,
+				get: get,
+				getByProd: getByProd,
+				put: put,
+				del: del,
+				getByTransId: getByTransId
+			};
+
+			return service;
+
+			function post(transactionObj){
+				return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/transaction', transactionObj);
+			}
+
+			function get(){
+				return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/transaction');
+			}
+
+			function getByProd(prodId){
+				return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/'+prodId+'/transactions')
+			}
+
+			function put(transId, putObj){
+				return $http.put('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)				
+			}
+
+			function del(transId){
+				return $http.delete('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)
+			}
+
+			function getByTransId(transId){
+				return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)
+			}
+		}
 })();
 //# sourceMappingURL=app.js.map

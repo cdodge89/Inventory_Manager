@@ -5,7 +5,8 @@
 	function item($http){
 		var service = {
 			get:get,
-			getSummary: getSummary
+			getProductSummaries: getProductSummaries,
+			post: post
 		};
 
 		return service;
@@ -14,8 +15,12 @@
 			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product');
 		}
 
-		function getSummary(){
-			// return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/summary');
+		function post(newProd){
+			return $https.post('http://wta-inventorybackend.herokuapp.com/api/v1/product', newProd);
+		}
+
+		function getProductSummaries(){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/summary');
 		}
 	}
 })();

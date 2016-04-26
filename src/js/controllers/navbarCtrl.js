@@ -36,12 +36,6 @@
 				});
 			}
 
-			// function getAllOrders(){
-			// 	Orders.getAll().then(function(response){
-			// 		console.log(response.data);
-			// 	});
-			// }
-
 			function isAdmin(){
 				//console.log('admin', Auth.isAdmin());
 				return Auth.isAdmin();

@@ -1,8 +1,12 @@
 <h1>history</h1>
 
 <ul>
-	<li ng-repeat="transaction in history.orders">
-		{{transaction.id}}
-		{{transaction.date}}
-	</li>
+	<div class="row" ng-repeat="transaction in history.orders">
+		<div class="col-md-3">
+			{{transaction.id}}
+		</div>
+		<div class="col-md-3">
+			{{transaction.date | date:'medium'}}
+		</div>
+	</div>
 </ul>

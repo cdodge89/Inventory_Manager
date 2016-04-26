@@ -1,12 +1,39 @@
 <h1>dashboard</h1>
 <div class="container">
+	<h3>Product Summaries</h3>
+	<div class="row">
+		<div class="col-md-3">Product</div>
+		<div class="col-md-3">Total Sold</div>
+		<div class="col-md-2">Lost/Stolen</div>
+		<div class="col-md-2">Returned To Supplier</div>
+		<div class="col-md-2">Returned Defective</div>
+	</div>
+	<div class="row" ng-repeat="product in dashboard.productSummaries">
+		<div class="col-md-3">{{product.name}}</div>
+		<div class="col-md-3">{{product.unitsOrdered}}</div>
+		<div class="col-md-2">{{product.totalStolen}}</div>
+		<div class="col-md-2">{{product.unitsReturned}}</div>
+		<div class="col-md-2">{{product.unitsReturned}}</div>
+	</div>
+	<h3>All Transactions</h3>
+	<div class="row">
+		<div class="col-md-1">Transaction Id</div>
+		<div class="col-md-4">Transaction Type</div>
+		<div class="col-md-2">Transaction Date</div>
+		<div class="col-md-2">Notes</div>
+		<div class="col-md-1">Amount</div>
+		<div class="col-md-1">Price</div>
+		<div class="col-md-1">Cost</div>
+	</div>
 	<div class="row" ng-repeat="transaction in dashboard.transactions">
-		<div class="col-md-1">{{transaction.id}}</div>
-		<div class="col-md-4">{{transaction.type.description}}</div>
-		<div class="col-md-2">{{transaction.date|date:'medium'}}</div>
-		<div class="col-md-2">{{transaction.note}}</div>
-		<div class="col-md-1">{{transaction.totalAmt}}</div>
-		<div class="col-md-1">{{transaction.totalPrice|currency}}</div>
-		<div class="col-md-1">{{transaction.totalCost|currency}}</div>
+		<div ui-sref="transaction-details({transId: transaction.id})">
+			<div class="col-md-1">{{transaction.id}}</div>
+			<div class="col-md-4">{{transaction.type.description}}</div>
+			<div class="col-md-2">{{transaction.date|date:'medium'}}</div>
+			<div class="col-md-2">{{transaction.note}}</div>
+			<div class="col-md-1">{{transaction.totalAmt}}</div>
+			<div class="col-md-1">{{transaction.totalPrice|currency}}</div>
+			<div class="col-md-1">{{transaction.totalCost|currency}}</div>
+		</div>
 	</div>
 </div>

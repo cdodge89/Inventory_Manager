@@ -46,24 +46,25 @@
 
 		//on successfully authenticating user, save the token
 		function successAuth(res) {
-			console.log('success - auth');
+			// console.log('success - auth');
 			$localStorage.token = res.data.token;
 			var tokenClaims = getClaimsFromToken();
+      // console.log('token ', tokenClaims);
       $location.path('/products')
 		}
 
     function checkLoggedIn(){
       if ($localStorage.token){
-        console.log('logged in');
+        // console.log('logged in');
         return true
       } else{
-        console.log('user not logged in');
+        // console.log('user not logged in');
         return false;
       }
     }
 
     function logOut(){
-      console.log('success - logout');
+      // console.log('success - logout');
         delete $localStorage.token;
     }
 
