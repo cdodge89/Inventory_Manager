@@ -4,26 +4,23 @@
 			var vm = this;
 
 			vm.products = getProductsAdmin;
+			vm.makeModal = makeModal;
+			vm.currentItem = null;
 			console.log('prod ', vm.products)
 
-			$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+			 function makeModal(item) {
+			 	console.log(item);
+			 	vm.currentItem = item;
 			    // Get the modal
 				var modal = document.getElementById('myModal');
-
-				// Get the button that opens the modal
-				var btn = document.getElementsByClassName("myBtn");
-				console.log('btns ', btn)
 
 				// Get the <span> element that closes the modal
 				var span = document.getElementsByClassName("close")[0];
 
 				// When the user clicks on the button, open the modal 
-				for(var i = 0; i < btn.length; i++){
-					btn[i].onclick = function() {
-				    	modal.style.display = "block";
-					}
-				}
-
+				
+				modal.style.display = "block";
+					
 				// When the user clicks on <span> (x), close the modal
 				span.onclick = function() {
 				    modal.style.display = "none";
@@ -35,6 +32,6 @@
 				        modal.style.display = "none";
 				    }
 				}
-			});
+			}
 		}]);
 })();
