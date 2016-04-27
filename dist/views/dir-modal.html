@@ -1,7 +1,7 @@
-<div id="myModal" class="modal">
+<div id="myModal" class="myModal" ng-show="vm.isModalShowing">
   <!-- Modal content -->
   <div class="modal-content">
-    <span class="close">x</span>
-    <p>{{admin.currentItem.name}}</p>
+    <span class="close" ng-click="vm.closeModal()">x</span>
+    <p>{{vm.item.name}}</p>
   </div>
 </div>

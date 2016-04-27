@@ -45503,34 +45503,16 @@ angular.module('ui.router.state')
 			var vm = this;
 
 			vm.products = getProductsAdmin;
-			vm.makeModal = makeModal;
+			vm.showModal = showModal;
 			vm.currentItem = null;
+			vm.isModalShowing = false;
 			console.log('prod ', vm.products)
 
-			 function makeModal(item) {
+			 function showModal(item) {
 			 	console.log(item);
 			 	vm.currentItem = item;
 			    // Get the modal
-				var modal = document.getElementById('myModal');
-
-				// Get the <span> element that closes the modal
-				var span = document.getElementsByClassName("close")[0];
-
-				// When the user clicks on the button, open the modal 
-				
-				modal.style.display = "block";
-					
-				// When the user clicks on <span> (x), close the modal
-				span.onclick = function() {
-				    modal.style.display = "none";
-				}
-
-				// When the user clicks anywhere outside of the modal, close it
-				window.onclick = function(event) {
-				    if (event.target == modal) {
-				        modal.style.display = "none";
-				    }
-				}
+				vm.isModalShowing = true;
 			}
 		}]);
 })();
@@ -45823,21 +45805,39 @@ angular.module('ui.router.state')
 	});
 })();
 (function(){
-	angular.module('routerApp').directive('productModal')
+	angular.module('routerApp').directive('productModal', ['$window', function($window){
+		return{
+			templateUrl: 'views/dir-modal',
+			scope: {
+				item: '=',
+				isModalShowing: '='
+			},
+			controller: function(){
+				var vm = this;
+				vm.closeModal = function(){
+					vm.isModalShowing = false
+				}
+			},
+			controllerAs: 'vm',
+			bindToController: true,
+			link: function(scope, element){
+				console.log('scope', scope);
+				scope.$watch('vm.isModalShowing', function(){
+					console.log('isModalShowing ', scope.vm.isModalShowing);
+				})
+				// When the user clicks anywhere outside of the modal, close it
+				$window.onclick = function(event) {
+					console.log('element ', element[0]);
+					console.log('event ', event.target);
+				    if (event.target == element[0]) {
+				    	console.log('vm ',scope.vm)
+				        scope.vm.isModalShowing = false;
+				    }
+				}
+			}
+		}
+	}]);
 })();
-var module = angular.module('routerApp')
-    .directive('onFinishRender', function ($timeout) {
-    return {
-        restrict: 'A',
-        link: function (scope, element, attr) {
-            if (scope.$last === true) {
-                $timeout(function () {
-                    scope.$emit('ngRepeatFinished');
-                });
-            }
-        }
-    }
-});
 (function(){
 	angular.module('routerApp').factory('Auth',auth);
 

@@ -2,18 +2,13 @@
 <div class="container cart-container">
 	<!-- <h2>Shopping Cart</h2> -->
 	<ul>
-		<admin-item ng-repeat="item in admin.products" item="item" item-clicked="admin.makeModal(clickedItem)">
+		<admin-item ng-repeat="item in admin.products" item="item" item-clicked="admin.showModal(clickedItem)">
 	</ul>
 </div>
+
+<product-modal item="admin.currentItem" is-modal-showing="admin.isModalShowing"></product-modal>
 
 <!-- Trigger/Open The Modal -->
 <!-- <button id="myBtn">Open Modal</button> -->
 
 <!-- The Modal -->
-<div id="myModal" class="modal">
-  <!-- Modal content -->
-  <div class="modal-content">
-    <span class="close">x</span>
-    <p>{{admin.currentItem.name}}</p>
-  </div>
-</div>
