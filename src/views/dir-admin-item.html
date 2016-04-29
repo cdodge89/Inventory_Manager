@@ -1,4 +1,4 @@
-<li ng-click="vm.itemClicked({clickedItem: vm.item})">
+<li ui-sref="product-details({productId: vm.item.id})">
 	<div class="row thumbnail myBtn">
 		<div class="col-md-1">
 			<img class="cart-img" ng-src="{{vm.item.imgThumbnail}}">

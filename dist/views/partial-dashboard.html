@@ -8,7 +8,7 @@
 		<div class="col-md-2">Returned To Supplier</div>
 		<div class="col-md-2">Returned Defective</div>
 	</div>
-	<div class="row" ng-repeat="product in dashboard.productSummaries">
+	<div ui-sref="transactions-by-product-id({productId: product.id})" class="row" ng-repeat="product in dashboard.productSummaries">
 		<div class="col-md-3">{{product.name}}</div>
 		<div class="col-md-3">{{product.unitsOrdered}}</div>
 		<div class="col-md-2">{{product.totalStolen}}</div>

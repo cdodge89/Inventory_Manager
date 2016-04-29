@@ -164,12 +164,21 @@ hr {
   color: #aaa;
   float: right;
   font-size: 28px;
-  font-weight: bold; }
+  font-weight: bold;
+  padding: 10px; }
 
 .close:hover,
 .close:focus {
   color: black;
   text-decoration: none;
   cursor: pointer; }
+
+.newProdIcon {
+  height: 50px;
+  width: 50px;
+  font-size: 50px; }
+
+.admin-header {
+  text-align: center; }
 
 /*# sourceMappingURL=main.css.map */

@@ -1,3 +1,10 @@
+<div class="col-md-3"></div>
+<div class="col-md-3">Name</div>
+<div class="col-md-3">Amount</div>
+<div class="col-md-3">Transaction Id</div>
 <div ng-repeat="sub in transaction.subTransactions" class="row">
 	<div class="col-md-3"><img class="cart-img" ng-src="{{sub.imgThumbnail}}"></div>
+	<div class="col-md-3">{{sub.name}}</div>
+	<div class="col-md-3">{{sub.amt}}</div>
+	<div class="col-md-3">{{sub.transId}}</div>
 </div>

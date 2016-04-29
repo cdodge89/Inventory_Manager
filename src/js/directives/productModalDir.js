@@ -6,12 +6,7 @@
 				item: '=',
 				isModalShowing: '='
 			},
-			controller: function(){
-				var vm = this;
-				vm.closeModal = function(){
-					vm.isModalShowing = false
-				}
-			},
+			controller: 'NewProductController',
 			controllerAs: 'vm',
 			bindToController: true,
 			link: function(scope, element){

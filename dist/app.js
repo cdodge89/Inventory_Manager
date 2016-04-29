@@ -45395,6 +45395,12 @@ angular.module('ui.router.state')
 					return Item.get().then(function(response){
 						return response.data;
 					});
+				},
+				getTransactionsAdmin: function(Transaction){
+					return Transaction.get().then(function(response){
+						console.log('transs ', response.data);
+						return response.data;
+					});
 				}
 			},
 			controller: 'AdminController as admin'
@@ -45466,6 +45472,18 @@ angular.module('ui.router.state')
 				}]
 			},
 			controller: 'TransactionDetailsController as transaction'
+		})
+		.state('transactions-by-product-id',{
+			url: '/product/:productId/transactions',
+			templateUrl: 'views/partial-transactions-by-product-id',
+			resolve: {
+				getProductTransactions: ['$stateParams', 'Item', function($stateParams, Item){
+					return Item.getProductTransactions($stateParams.productId).then(function(response){
+						return response.data;
+					});
+				}]
+			},
+			controller: 'ProductTransactionController as product'
 		});
 	})
 	.config(['$httpProvider', function ($httpProvider) {
@@ -45499,14 +45517,16 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('AdminController',['Item', 'getProductsAdmin', '$scope', function(Item, getProductsAdmin, $scope){
+		.controller('AdminController',['Item', 'getProductsAdmin','getTransactionsAdmin', '$scope', function(Item, getProductsAdmin, getTransactionsAdmin, $scope){
 			var vm = this;
 
 			vm.products = getProductsAdmin;
+			vm.transactions = getTransactionsAdmin;
 			vm.showModal = showModal;
 			vm.currentItem = null;
 			vm.isModalShowing = false;
-			console.log('prod ', vm.products)
+			console.log('prod ', vm.products);
+			console.log('trans', vm.transactions);
 
 			 function showModal(item) {
 			 	console.log(item);
@@ -45674,6 +45694,38 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
+		.controller('NewProductController', ['Item', function(Item){
+			var vm = this;
+			vm.newProduct = {
+				amt:null,
+				description:null,
+				imgThumbnail:null,
+				name:null,
+				price:null,
+				cost:null
+			}
+
+			vm.closeModal = closeModal;
+			vm.postNewProduct = postNewProduct;
+
+			function closeModal(){
+				vm.isModalShowing = false
+				vm.newProduct = null;
+			}
+
+			function postNewProduct(newProd){
+				if(newProd.amt && newProd.description && newProd.imgThumbnail && newProd.name && newProd.cost && newProd.price){
+					Item.post(newProd).then(function(response){
+						console.log(response.data);
+					});
+				} else{
+					alert("Please fill out all fields");
+				}
+			}
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
 		.controller('HistoryController', ['OrderHistory', 'getHistory', function(OrderHistory, getHistory){
 			var vm = this;
 
@@ -45694,6 +45746,15 @@ angular.module('ui.router.state')
 			
 			//bound function implementation
 			
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
+		.controller('ProductTransactionController', ['getProductTransactions',function(getProductTransactions){
+			var vm = this;
+
+			vm.transactions = getProductTransactions;
+			console.log('prod trans ', vm.transactions);
 		}]);
 })();
 (function(){
@@ -45796,7 +45857,7 @@ angular.module('ui.router.state')
 			templateUrl: 'views/dir-admin-item',
 			scope: {
 				item: '=',
-				itemClicked: '&'
+				// itemClicked: '&'
 			},
 			controller: function(){},
 			controllerAs: 'vm',
@@ -45805,6 +45866,37 @@ angular.module('ui.router.state')
 	});
 })();
 (function(){
+	angular.module('routerApp').directive('adminTransaction', function(){
+		return{
+			templateUrl: 'views/dir-admin-transaction',
+			scope: {
+				transaction: '=',
+				// itemClicked: '&'
+			},
+			controller: function(){},
+			controllerAs: 'vm',
+			bindToController: true
+		}
+	});
+})();
+(function(){
+	angular.module('routerApp').directive('newProduct', function(){
+		return{
+			templateUrl: 'views/dir-new-item',
+			scope: {
+				item: '=',
+				itemClicked: '&'
+			},
+			controller: function(){},
+			controllerAs: 'vm',
+			bindToController: true
+		}
+	});
+})();
+
+
+
+(function(){
 	angular.module('routerApp').directive('productModal', ['$window', function($window){
 		return{
 			templateUrl: 'views/dir-modal',
@@ -45812,12 +45904,7 @@ angular.module('ui.router.state')
 				item: '=',
 				isModalShowing: '='
 			},
-			controller: function(){
-				var vm = this;
-				vm.closeModal = function(){
-					vm.isModalShowing = false
-				}
-			},
+			controller: 'NewProductController',
 			controllerAs: 'vm',
 			bindToController: true,
 			link: function(scope, element){
@@ -45978,7 +46065,8 @@ angular.module('ui.router.state')
 		var service = {
 			get:get,
 			getProductSummaries: getProductSummaries,
-			post: post
+			post: post,
+			getProductTransactions: getProductTransactions
 		};
 
 		return service;
@@ -45988,11 +46076,15 @@ angular.module('ui.router.state')
 		}
 
 		function post(newProd){
-			return $https.post('http://wta-inventorybackend.herokuapp.com/api/v1/product', newProd);
+			return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/product', newProd);
 		}
 
 		function getProductSummaries(){
 			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/summary');
+		}
+
+		function getProductTransactions(prodId){
+			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/' + prodId + '/transactions')
 		}
 	}
 })();

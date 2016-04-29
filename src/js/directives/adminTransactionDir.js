@@ -1,9 +1,9 @@
 (function(){
-	angular.module('routerApp').directive('adminItem', function(){
+	angular.module('routerApp').directive('adminTransaction', function(){
 		return{
-			templateUrl: 'views/dir-admin-item',
+			templateUrl: 'views/dir-admin-transaction',
 			scope: {
-				item: '=',
+				transaction: '=',
 				// itemClicked: '&'
 			},
 			controller: function(){},

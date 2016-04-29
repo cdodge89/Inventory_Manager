@@ -77,6 +77,12 @@
 					return Item.get().then(function(response){
 						return response.data;
 					});
+				},
+				getTransactionsAdmin: function(Transaction){
+					return Transaction.get().then(function(response){
+						console.log('transs ', response.data);
+						return response.data;
+					});
 				}
 			},
 			controller: 'AdminController as admin'
@@ -148,6 +154,18 @@
 				}]
 			},
 			controller: 'TransactionDetailsController as transaction'
+		})
+		.state('transactions-by-product-id',{
+			url: '/product/:productId/transactions',
+			templateUrl: 'views/partial-transactions-by-product-id',
+			resolve: {
+				getProductTransactions: ['$stateParams', 'Item', function($stateParams, Item){
+					return Item.getProductTransactions($stateParams.productId).then(function(response){
+						return response.data;
+					});
+				}]
+			},
+			controller: 'ProductTransactionController as product'
 		});
 	})
 	.config(['$httpProvider', function ($httpProvider) {

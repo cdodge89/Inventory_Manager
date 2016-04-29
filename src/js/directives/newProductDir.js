@@ -1,10 +1,10 @@
 (function(){
-	angular.module('routerApp').directive('adminItem', function(){
+	angular.module('routerApp').directive('newProduct', function(){
 		return{
-			templateUrl: 'views/dir-admin-item',
+			templateUrl: 'views/dir-new-item',
 			scope: {
 				item: '=',
-				// itemClicked: '&'
+				itemClicked: '&'
 			},
 			controller: function(){},
 			controllerAs: 'vm',
