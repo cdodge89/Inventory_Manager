@@ -45469,7 +45469,12 @@ angular.module('ui.router.state')
 					return Transaction.getByTransId($stateParams.transId).then(function(response){
 						return response.data;
 					});
-				}]
+				}],
+				getAllProducts: function(Item){
+					return Item.get().then(function(response){
+						return response.data;
+					});
+				}
 			},
 			controller: 'TransactionDetailsController as transaction'
 		})
@@ -45517,20 +45522,24 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('AdminController',['Item', 'getProductsAdmin','getTransactionsAdmin', '$scope', function(Item, getProductsAdmin, getTransactionsAdmin, $scope){
+		.controller('AdminController',['Transaction', 'Item', 'getProductsAdmin','getTransactionsAdmin', '$scope','ProdTransBool' ,
+			function(Transaction, Item, getProductsAdmin, getTransactionsAdmin, $scope, ProdTransBool){
 			var vm = this;
 
 			vm.products = getProductsAdmin;
 			vm.transactions = getTransactionsAdmin;
+			Transaction.transactions = vm.transactions;
 			vm.showModal = showModal;
 			vm.currentItem = null;
 			vm.isModalShowing = false;
+
 			console.log('prod ', vm.products);
 			console.log('trans', vm.transactions);
 
-			 function showModal(item) {
+			 function showModal(item, bool) {
 			 	console.log(item);
 			 	vm.currentItem = item;
+			 	ProdTransBool.setIsProduct(bool);
 			    // Get the modal
 				vm.isModalShowing = true;
 			}
@@ -45583,14 +45592,77 @@ angular.module('ui.router.state')
 			var vm = this;
 
 			vm.transactions = getAllTransactions;
+			vm.currentTransactions = vm.transactions.slice(0);
+			vm.numberOfTransactions = numberOfTransactions(vm.transactions);
+			vm.inventoryAffected = inventoryAffected(vm.transactions);
+			vm.totalCost = totalCost(vm.transactions);
+			vm.totalRevenue = totalRevenue(vm.transactions);
+			vm.totalProfit = [];
+
+			vm.filterBy = filterBy;
 			console.log('trans ', vm.transactions)
 			vm.productSummaries = getProductSummaries;
 			console.log('summ ', vm.productSummaries);
+
+			function filterBy(typeOfTransaction){
+				console.log('fired');
+				vm.currentTransactions.length = 0;
+				for(var i = 0; i < vm.transactions.length; i++){
+					if(vm.transactions[i].type.id === typeOfTransaction){
+						vm.currentTransactions.push(vm.transactions[i]);
+					}
+				}
+			}
+
+			function numberOfTransactions(transactions){
+				var arr = [0,0,0,0,0,0];
+				for(var i = 1; i <= 6; i++)
+					for(var j = 0; j < transactions.length; j++){
+						if(transactions[j].type.id === i){
+							arr[i-1] += 1;
+						}
+					}
+				return arr;
+			}
+
+			function inventoryAffected(transactions){
+				var arr = [0,0,0,0,0,0];
+				for(var i = 1; i <= 6; i++)
+					for(var j = 0; j < transactions.length; j++){
+						if(transactions[j].type.id === i){
+							arr[i-1] += transactions[j].totalAmt;
+						}
+					}
+				return arr;
+			}
+
+			function totalCost(transactions){
+				var arr = [0,0,0,0,0,0];
+				for(var i = 1; i <= 6; i++)
+					for(var j = 0; j < transactions.length; j++){
+						if(transactions[j].type.id === i){
+							arr[i-1] += transactions[j].totalCost;
+						}
+					}
+				return arr;
+			}
+
+			function totalRevenue(transactions){
+				var arr = [0,0,0,0,0,0];
+				for(var i = 1; i <= 6; i++)
+					for(var j = 0; j < transactions.length; j++){
+						if(transactions[j].type.id === i){
+							arr[i-1] += transactions[j].totalPrice;
+						}
+					}
+				return arr;
+			}
 		}]);
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('DetailsController', ['Item', 'getProducts', '$stateParams', function(Item, getProducts, $stateParams){
+		.controller('DetailsController', ['Item', 'getProducts', '$stateParams', 'Auth', 
+								  function(Item, getProducts, $stateParams, Auth){
 			var vm = this;
 			var id = $stateParams.productId;
 			id = +id;
@@ -45598,6 +45670,12 @@ angular.module('ui.router.state')
 			//bound variables
 			vm.list = getProducts;
 			vm.currentProduct = vm.list[findById(id, vm.list)];
+			vm.isAdmin = Auth.isAdmin();
+			vm.formIsShowing = false;
+
+			vm.toggleForm = toggleForm;
+			vm.putProduct = putProduct;
+			vm.removeProduct = removeProduct;
 			console.log(vm.list);
 
 
@@ -45609,6 +45687,22 @@ angular.module('ui.router.state')
 					}
 				}
 				return null;
+			}
+
+			function toggleForm(){
+				vm.formIsShowing = !vm.formIsShowing;
+			}
+
+			function putProduct(updatedObj, prodId){
+				Item.put(updatedObj, prodId).then(function(response){
+					console.log(response.data);
+				})
+			}
+
+			function removeProduct(prodId){
+				Item.remove(prodId).then(function(response){
+					console.log(response.data);
+				})
 			}
 			
 		}]);
@@ -45635,7 +45729,22 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('NavbarController', ['Auth', 'Orders', function(Auth, Orders){
+		.controller('ModalController', ['Item', 'ProdTransBool', function(Item, ProdTransBool){
+			var vm = this;
+			vm.isProduct = ProdTransBool.isProduct;
+			
+			vm.closeModal = closeModal;
+
+			function closeModal(){
+				console.log('close modal');
+				vm.isModalShowing = false
+				vm.newProduct = null;
+			}
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
+		.controller('NavbarController', ['Auth', 'Orders','$document', function(Auth, Orders, $document){
 			var vm = this;
 
 			vm.isLoggedIn = isLoggedIn;
@@ -45677,7 +45786,7 @@ angular.module('ui.router.state')
 			}
 
 // Close the dropdown menu if the user clicks outside of it
-			window.onclick = function(event) {
+			$document.on('click', function(event) {
 			  if (!event.target.matches('.dropbtn')) {
 
 			    var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -45689,39 +45798,7 @@ angular.module('ui.router.state')
 			      }
 			    }
 			  }
-			}
-		}]);
-})();
-(function(){
-	angular.module('routerApp')
-		.controller('NewProductController', ['Item', function(Item){
-			var vm = this;
-			vm.newProduct = {
-				amt:null,
-				description:null,
-				imgThumbnail:null,
-				name:null,
-				price:null,
-				cost:null
-			}
-
-			vm.closeModal = closeModal;
-			vm.postNewProduct = postNewProduct;
-
-			function closeModal(){
-				vm.isModalShowing = false
-				vm.newProduct = null;
-			}
-
-			function postNewProduct(newProd){
-				if(newProd.amt && newProd.description && newProd.imgThumbnail && newProd.name && newProd.cost && newProd.price){
-					Item.post(newProd).then(function(response){
-						console.log(response.data);
-					});
-				} else{
-					alert("Please fill out all fields");
-				}
-			}
+			});
 		}]);
 })();
 (function(){
@@ -45735,12 +45812,43 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
+		.controller('ProductFormController', ['Item', function(Item){
+			var vm = this;
+
+			vm.newProduct = {
+				amt:null,
+				description:null,
+				imgThumbnail:null,
+				name:null,
+				price:null,
+				cost:null
+			}
+
+			vm.postNewProduct = postNewProduct;
+
+			function postNewProduct(newProd){
+				if(newProd.amt && newProd.description && newProd.imgThumbnail && newProd.name && newProd.cost && newProd.price){
+					Item.post(newProd).then(function(response){
+						Item.addToProducts(newProd);
+						console.log(response.data);
+					});
+				} else{
+					alert("Please fill out all fields");
+				}
+			}
+
+
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
 		.controller('ProductsController', ['Item', 'getProducts', function(Item, getProducts){
 			var vm = this;
 			//bound variables
 			vm.currentProduct = null;
 			vm.currentProductIndex = null;
 			vm.list = getProducts;
+			Item.products = vm.list
 
 			//bound functions
 			
@@ -45831,14 +45939,27 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('TransactionDetailsController', ['Item', 'getTransactionDetails', '$stateParams', function(Item, getTransactionDetails, $stateParams){
+		.controller('TransactionDetailsController', ['getAllProducts','Transaction', 'Item', 'getTransactionDetails', '$stateParams', 
+											function(getAllProducts,Transaction, Item, getTransactionDetails, $stateParams){
 			var vm = this;
 
 			vm.transaction = getTransactionDetails;
-			vm.subTransactions = vm.transaction.subTransactions;
+			vm.newTransaction = {};
+			vm.products = getAllProducts;
+			console.log('prods ', vm.products);
+			vm.id = vm.transaction.id;
+			// console.log('trans ', vm.transaction)
+			// vm.subTransactions = vm.transaction.subTransactions;
+			vm.types = ['Sale', 'Lost/Stolen','Returned To Supplier', 'Inventory Purchase', 'Returned', 'Returned Defective']
+			vm.editMode = false;
+			vm.toggleEdit = toggleEdit;
+			vm.putTransaction = putTransaction;
 			console.log(vm.transaction);
 
 
+			function toggleEdit(){
+				vm.editMode = !vm.editMode
+			}
 			//helper functions
 			function findById(id, productArr){
 				for(var i = 0; i < productArr.length; i++){
@@ -45848,7 +45969,102 @@ angular.module('ui.router.state')
 				}
 				return null;
 			}
-			
+
+			function putTransaction(transId, putObj){
+				// Transaction.put(transId, putObj).then(function(response){
+				// 	console.log(response.data);
+				// });
+				console.log('obj ',putObj);
+			}
+		}]);
+})();
+(function(){
+	angular.module('routerApp')
+		.controller('TransactionFormController', ['Item', 'Transaction', function(Item, Transaction){
+			var vm = this;
+
+			vm.products = Item.products;
+			vm.transactions = Transaction.transactions;
+			// console.log('trans products ', vm.products)
+			vm.typeOfTransaction = 1;
+			vm.descriptions = ['Sale', 'Lost/Stolen', 'Returned to Supplier', 'Inventory Purchase', 'Returned', 'Returned Defective' ]
+			vm.newTransaction = {
+				type: {
+					id: null,
+					description: null,
+				},
+				date: null,
+				notes: null,
+				altersId: null,
+				subTransactions: [
+					{
+						id: null, 
+						qty: null
+					}
+				]
+			}
+
+			vm.setTransactionType = setTransactionType;
+			vm.transactionTypeIsSet = transactionTypeIsSet;
+			vm.addSubTransaction = addSubTransaction;
+			vm.removeFromArr = removeFromArr;
+			vm.postTransaction = postTransaction;
+
+			function setTransactionType(num){
+				vm.typeOfTransaction = num;
+				console.log('type ', vm.typeOfTransaction);
+			}
+
+			function transactionTypeIsSet(num){
+				return vm.typeOfTransaction === num;
+			}
+
+			function addSubTransaction(){
+				console.log('fired subtrans');
+				vm.newTransaction.subTransactions.push({id: null, description: null});
+				console.log('subtrans added ', vm.newTransaction);
+			}
+
+			function removeFromArr(index, arr){
+				for(var i = index; i < arr.length - 1; i++){
+					arr[i] = arr[i+1]
+				}
+				arr.length = arr.length - 1;
+			}
+
+			function postTransaction(transObj){
+				newTrans = transObj;
+				if(allSubsFilledOut(newTrans.subTransactions)){
+					newTrans.type.id = vm.typeOfTransaction;
+					newTrans.type.description = vm.descriptions[vm.typeOfTransaction - 1];
+					newTrans.date = new Date();
+					parseIds(newTrans.subTransactions);
+					Transaction.post(newTrans).then(function(response){
+						console.log('new transaction posted - ',response.data);
+						vm.transactions.push(newTrans);
+					});
+				} else{
+					alert('Please fill out all of the fields in each subtransaction');
+				}
+					
+			}
+
+			function parseIds(arr){
+				for(var i = 0; i < arr.length; i++){
+					var str = arr[i].id;
+					arr[i].id = parseInt(str);
+				}
+				console.log('IDs ', arr);
+			}
+
+			function allSubsFilledOut(arr){
+				for ( var i = 0; i < arr.length; i++){
+					if(!arr[i].id || !arr[i].qty){
+						return false;
+					}
+				}
+				return true;
+			}
 		}]);
 })();
 (function(){
@@ -45880,6 +46096,45 @@ angular.module('ui.router.state')
 	});
 })();
 (function(){
+	angular.module('routerApp').directive('modal', ['$window','$timeout','$document', function($window, $timeout, $document){
+		return{
+			templateUrl: 'views/dir-modal',
+			scope: {
+				item: '=',
+				isModalShowing: '='
+			},
+			controller: 'ModalController',
+			controllerAs: 'vm',
+			bindToController: true,
+			link: function(scope, element){
+				// console.log('scope', scope);
+				scope.$watch('vm.isModalShowing', function(){
+					if(scope.vm.isModalShowing){
+						$timeout(function(){$document.on('click', click)},0);
+					}
+				});
+				// When the user clicks anywhere outside of the modal, close it
+				var click = function(event) {
+					if(scope.vm.isModalShowing){
+						console.log('element ', element[0]);
+						console.log('event ', event.target);
+						var modalContent = element.find('.modal-content')[0];
+					    if (event.target !== modalContent && !modalContent.contains(event.target)) {
+					    	console.log('vm ',scope.vm);
+					        // $timeout(function(){
+					        	scope.vm.isModalShowing = false;
+					        	scope.$applyAsync();
+					        	console.log('click exp ', click);
+					        	$document.off('click', click);
+					        // },0);
+					    }
+					}
+				};
+			}
+		}
+	}]);
+})();
+(function(){
 	angular.module('routerApp').directive('newProduct', function(){
 		return{
 			templateUrl: 'views/dir-new-item',
@@ -45893,37 +46148,47 @@ angular.module('ui.router.state')
 		}
 	});
 })();
-
-
-
 (function(){
-	angular.module('routerApp').directive('productModal', ['$window', function($window){
+	angular.module('routerApp').directive('newProductForm', function(){
 		return{
-			templateUrl: 'views/dir-modal',
+			templateUrl: 'views/dir-new-product-form',
 			scope: {
 				item: '=',
-				isModalShowing: '='
+				itemClicked: '&'
 			},
-			controller: 'NewProductController',
+			controller: 'ProductFormController',
 			controllerAs: 'vm',
-			bindToController: true,
-			link: function(scope, element){
-				console.log('scope', scope);
-				scope.$watch('vm.isModalShowing', function(){
-					console.log('isModalShowing ', scope.vm.isModalShowing);
-				})
-				// When the user clicks anywhere outside of the modal, close it
-				$window.onclick = function(event) {
-					console.log('element ', element[0]);
-					console.log('event ', event.target);
-				    if (event.target == element[0]) {
-				    	console.log('vm ',scope.vm)
-				        scope.vm.isModalShowing = false;
-				    }
-				}
-			}
+			bindToController: true
 		}
-	}]);
+	});
+})();
+(function(){
+	angular.module('routerApp').directive('newTransaction', function(){
+		return{
+			templateUrl: 'views/dir-new-transaction',
+			scope: {
+				transaction: '=',
+				transactionClicked: '&'
+			},
+			controller: function(){},
+			controllerAs: 'vm',
+			bindToController: true
+		}
+	});
+})();
+(function(){
+	angular.module('routerApp').directive('newTransactionForm', function(){
+		return{
+			templateUrl: 'views/dir-new-transaction-form',
+			scope: {
+				item: '=',
+				itemClicked: '&'
+			},
+			controller: 'TransactionFormController',
+			controllerAs: 'vm',
+			bindToController: true
+		}
+	});
 })();
 (function(){
 	angular.module('routerApp').factory('Auth',auth);
@@ -46066,7 +46331,11 @@ angular.module('ui.router.state')
 			get:get,
 			getProductSummaries: getProductSummaries,
 			post: post,
-			getProductTransactions: getProductTransactions
+			put: put,
+			remove: remove,
+			getProductTransactions: getProductTransactions,
+			addToProducts: addToProducts,
+			products: []
 		};
 
 		return service;
@@ -46079,12 +46348,24 @@ angular.module('ui.router.state')
 			return $http.post('http://wta-inventorybackend.herokuapp.com/api/v1/product', newProd);
 		}
 
+		function put(updatedObj, prodId){
+			return $http.put('http://wta-inventorybackend.herokuapp.com/api/v1/product/' + prodId, updatedObj);
+		}
+
+		function remove(prodId){
+			return $http.delete('http://wta-inventorybackend.herokuapp.com/api/v1/product/' + prodId)
+		}
+
 		function getProductSummaries(){
 			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/summary');
 		}
 
 		function getProductTransactions(prodId){
 			return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/product/' + prodId + '/transactions')
+		}
+
+		function addToProducts(newProduct){
+			service.products.push(newProduct);
 		}
 	}
 })();
@@ -46131,6 +46412,22 @@ angular.module('ui.router.state')
 	}
 })();
 (function(){
+	angular.module('routerApp').factory('ProdTransBool', prodtransbool);
+
+		function prodtransbool(){
+			var service = {
+				isProduct: true,
+				setIsProduct: setIsProduct,
+			}
+
+			return service;
+
+			function setIsProduct(bool){
+				service.isProduct = bool;
+			}
+		}
+})();
+(function(){
 	angular.module('routerApp').factory('Signup',signup);
 
 	signup.$inject = ['$http', 'Auth'];
@@ -46160,7 +46457,9 @@ angular.module('ui.router.state')
 				getByProd: getByProd,
 				put: put,
 				del: del,
-				getByTransId: getByTransId
+				getByTransId: getByTransId,
+				addTransaction: addTransaction,
+				transactions: []
 			};
 
 			return service;
@@ -46187,6 +46486,10 @@ angular.module('ui.router.state')
 
 			function getByTransId(transId){
 				return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)
+			}
+
+			function addTransaction(newTransaction){
+				service.transactions.push(newTransaction);
 			}
 		}
 })();

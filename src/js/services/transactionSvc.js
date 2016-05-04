@@ -9,7 +9,9 @@
 				getByProd: getByProd,
 				put: put,
 				del: del,
-				getByTransId: getByTransId
+				getByTransId: getByTransId,
+				addTransaction: addTransaction,
+				transactions: []
 			};
 
 			return service;
@@ -36,6 +38,10 @@
 
 			function getByTransId(transId){
 				return $http.get('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)
+			}
+
+			function addTransaction(newTransaction){
+				service.transactions.push(newTransaction);
 			}
 		}
 })();

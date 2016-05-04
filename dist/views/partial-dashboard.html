@@ -1,21 +1,76 @@
 <h1>dashboard</h1>
 <div class="container">
+	
 	<h3>Product Summaries</h3>
 	<div class="row">
 		<div class="col-md-3">Product</div>
-		<div class="col-md-3">Total Sold</div>
-		<div class="col-md-2">Lost/Stolen</div>
+		<div class="col-md-1">Sale</div>
+		<div class="col-md-1">Lost/Stolen</div>
 		<div class="col-md-2">Returned To Supplier</div>
-		<div class="col-md-2">Returned Defective</div>
+		<!-- <div class="col-md-2">Inventory Purchase</div> -->
+		<div class="col-md-2">Returned</div>
+		<!-- <div class="col-md-2">Returned Defective</div> -->
 	</div>
 	<div ui-sref="transactions-by-product-id({productId: product.id})" class="row" ng-repeat="product in dashboard.productSummaries">
 		<div class="col-md-3">{{product.name}}</div>
-		<div class="col-md-3">{{product.unitsOrdered}}</div>
-		<div class="col-md-2">{{product.totalStolen}}</div>
+		<div class="col-md-1">{{product.unitsOrdered}}</div>
+		<div class="col-md-1">{{product.totalStolen}}</div>
 		<div class="col-md-2">{{product.unitsReturned}}</div>
 		<div class="col-md-2">{{product.unitsReturned}}</div>
 	</div>
-	<h3>All Transactions</h3>
+	<h3>Transaction Summaries</h3>
+	<div class="row">
+		<div class="col-md-2">Transaction Type</div>
+		<div class="col-md-1" ng-click="dashboard.filterBy(1)">Sale</div>
+		<div class="col-md-2" ng-click="dashboard.filterBy(2)">Lost/Stolen</div>
+		<div class="col-md-2" ng-click="dashboard.filterBy(3)">Returned To Supplier</div>
+		<div class="col-md-2" ng-click="dashboard.filterBy(4)">Inventory Purchase</div>
+		<div class="col-md-1" ng-click="dashboard.filterBy(5)">Returned</div>
+		<div class="col-md-2" ng-click="dashboard.filterBy(6)">Returned Defective</div>
+	</div>
+	<div class="row">
+		<div class="col-md-2">Number of Transactions</div>
+		<div class="col-md-1">{{dashboard.numberOfTransactions[0]}}</div>
+		<div class="col-md-2">{{dashboard.numberOfTransactions[1]}}</div>
+		<div class="col-md-2">{{dashboard.numberOfTransactions[2]}}</div>
+		<div class="col-md-2">{{dashboard.numberOfTransactions[3]}}</div>
+		<div class="col-md-1">{{dashboard.numberOfTransactions[4]}}</div>
+		<div class="col-md-2">{{dashboard.numberOfTransactions[5]}}</div>
+	</div>
+	<div class="row">
+		<div class="col-md-2">Inventory Affected</div>
+		<div class="col-md-1">-{{dashboard.inventoryAffected[0]}}</div>
+		<div class="col-md-2">{{dashboard.inventoryAffected[1]}}</div>
+		<div class="col-md-2">-{{dashboard.inventoryAffected[2]}}</div>
+		<div class="col-md-2">{{dashboard.inventoryAffected[3]}}</div>
+		<div class="col-md-1">{{dashboard.inventoryAffected[4]}}</div>
+		<div class="col-md-2">{{dashboard.inventoryAffected[5]}}</div>
+	</div><div class="row">
+		<div class="col-md-2">Total Cost</div>
+		<div class="col-md-1">{{dashboard.totalCost[0] | currency}}</div>
+		<div class="col-md-2">{{dashboard.totalCost[1] | currency}}</div>
+		<div class="col-md-2">{{dashboard.totalCost[2] | currency}}</div>
+		<div class="col-md-2">{{dashboard.totalCost[3] | currency}}</div>
+		<div class="col-md-1">{{dashboard.totalCost[4] | currency}}</div>
+		<div class="col-md-2">{{dashboard.totalCost[5] | currency}}</div>
+	</div><div class="row">
+		<div class="col-md-2">Total Revenue</div>
+		<div class="col-md-1">{{dashboard.totalRevenue[0] | currency}}</div>
+		<div class="col-md-2">{{dashboard.totalRevenue[1] | currency}}</div>
+		<div class="col-md-2">{{dashboard.totalRevenue[2] | currency}}</div>
+		<div class="col-md-2">-{{dashboard.totalRevenue[3] | currency}}</div>
+		<div class="col-md-1">{{dashboard.totalRevenue[4] | currency}}</div>
+		<div class="col-md-2">{{dashboard.totalRevenue[5] | currency}}</div>
+	</div><div class="row">
+		<div class="col-md-2">Total Profit</div>
+		<div class="col-md-1"></div>
+		<div class="col-md-2"></div>
+		<div class="col-md-2"></div>
+		<div class="col-md-2"></div>
+		<div class="col-md-1"></div>
+		<div class="col-md-2"></div>
+	</div>
+	<h3>Transactions</h3>
 	<div class="row">
 		<div class="col-md-1">Transaction Id</div>
 		<div class="col-md-4">Transaction Type</div>
@@ -25,7 +80,7 @@
 		<div class="col-md-1">Price</div>
 		<div class="col-md-1">Cost</div>
 	</div>
-	<div class="row" ng-repeat="transaction in dashboard.transactions">
+	<div class="row" ng-repeat="transaction in dashboard.currentTransactions">
 		<div ui-sref="transaction-details({transId: transaction.id})">
 			<div class="col-md-1">{{transaction.id}}</div>
 			<div class="col-md-4">{{transaction.type.description}}</div>

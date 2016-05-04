@@ -1,0 +1,41 @@
+<div class="row">
+	<div class="col-md-2"><h3>New Transaction</h3></div>
+	<div class="col-md-10">
+		<div class="col-md-2 btn btn-secondary" ng-class="{active: vm.transactionTypeIsSet(1)}" ng-click="vm.setTransactionType(1)"><span>Sale</span></div>
+		<div class="col-md-2 btn btn-secondary" ng-class="{active: vm.transactionTypeIsSet(2)}" ng-click="vm.setTransactionType(2)"><span>Lost/Stolen</span></div>
+		<div class="col-md-2 btn btn-secondary" ng-class="{active: vm.transactionTypeIsSet(3)}" ng-click="vm.setTransactionType(3)"><span>Returned To Supplier</span></div>
+		<div class="col-md-2 btn btn-secondary" ng-class="{active: vm.transactionTypeIsSet(4)}" ng-click="vm.setTransactionType(4)"><span>Inventory Purchase</span></div>
+		<div class="col-md-2 btn btn-secondary" ng-class="{active: vm.transactionTypeIsSet(5)}" ng-click="vm.setTransactionType(5)"><span>Returned</span></div>
+		<div class="col-md-2 btn btn-secondary" ng-class="{active: vm.transactionTypeIsSet(6)}" ng-click="vm.setTransactionType(6)"><span>Returned Defective</span></div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-2" ng-if="!vm.transactionTypeIsSet(1) && !vm.transactionTypeIsSet(4)">Altered Transaction ID</div>
+	<div class="col-md-2">Notes</div>
+	<div class="col-md-4">Product</div>
+	<div class="col-md-2">Quantity</div>
+</div>
+<div class="row">
+	<div class="col-md-2" ng-if="!vm.transactionTypeIsSet(1) && !vm.transactionTypeIsSet(4)"><select ng-model="vm.newTransaction.altersId">
+		<option></option>
+		<option ng-repeat="transaction in vm.transactions"><span>{{transaction.id}}</span></option>
+	</select></div>
+	<div class="col-md-2"><input type="text" ng-model="vm.newTransaction.notes"></div>
+	<div class="col-md-8">
+		<div class="col-md-12 no-padding" ng-repeat="sub in vm.newTransaction.subTransactions">
+			<div class="col-md-6 no-padding left"><select ng-model="vm.newTransaction.subTransactions[$index].id">
+				<option ng-repeat="product in vm.products"><span>{{product.id}}</span> - <span>{{product.name}}</span></option>
+			</select></div>
+			<div class="col-md-4 left"><input type="number" min="0" step="1" ng-model="vm.newTransaction.subTransactions[$index].qty"></div>
+			<div class="col-md-2 left"><i class="fa fa-minus transIcon" ng-if="vm.newTransaction.subTransactions.length > 1" ng-click="vm.removeFromArr($index, vm.newTransaction.subTransactions)"></i></div>
+		</div>
+	</div>
+	
+</div>
+	
+<div class="row">
+	<div class="col-md-8"></div>
+	<div class="col-md-1 right"><i class="fa fa-plus transIcon" ng-click="vm.addSubTransaction()"></i></div>
+	<div class="col-md-1"></div>
+	<div class="col-md-2 btn btn-purchase" ng-click="vm.postTransaction(vm.newTransaction)">Submit Transaction</div>
+</div>

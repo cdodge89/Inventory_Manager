@@ -1,4 +1,41 @@
-<h1>{{details.currentProduct.name}}</h1>
-<h3>{{details.currentProduct.description}}</h3>
-<div class='thumbnail'><img ng-src="{{details.currentProduct.imgThumbnail}}"> </div>
-<div class='btn btn-purchase' ui-sref="purchase({productId: details.id})">Buy Now!</div>
+<div class="container center">
+	<div class="details-container center">
+		<div class="row center">
+			<div class="row center">
+				<h1>{{details.currentProduct.name}}</h1>
+			</div>
+			<div class="row center">
+				<img class="details-img" ng-src="{{details.currentProduct.imgThumbnail}}">
+			</div>
+			<div class="row center">
+				{{details.currentProduct.description}}
+			</div>
+			<div class="row center padding-top">
+				<div ng-if="!details.isAdmin" class='btn btn-purchase' ui-sref="purchase({productId: details.id})">Buy Now!</div>
+				<div ng-if="details.isAdmin" class="btn btn-primary" ng-click="details.toggleForm(details.formIsShowing)">Edit</div>
+			</div>
+		</div>
+	</div>
+	<div ng-show="details.formIsShowing" class="thumbnail padding-top padding-bottom margin-top">
+		<div class="row">
+			<div class="col-md-2">Name</div>
+			<div class="col-md-2">Description</div>
+			<div class="col-md-2">Inventory</div>
+			<div class="col-md-2">Image Link</div>
+			<div class="col-md-2">Cost</div>
+			<div class="col-md-2">Price</div>
+		</div>
+		<div class="row">
+			<div class="col-md-2"><input type="text" ng-model="details.currentProduct.name"></div>
+			<div class="col-md-2"><input type="text" ng-model="details.currentProduct.description"></div>
+			<div class="col-md-2"><input type="number" min="0" step="1" ng-model="details.currentProduct.amt"></div>
+			<div class="col-md-2"><input type="text" ng-model="details.currentProduct.imgThumbnail"></div>
+			<div class="col-md-2"><input type="number" min="0" ng-model="details.currentProduct.cost"></div>
+			<div class="col-md-2"><input type="number" min="0" ng-model="details.currentProduct.price"></div>
+		</div>
+		<div class="row padding-top">
+			<div class="btn btn-primary" ng-click="details.putProduct(details.currentProduct, details.id)">Submit Changes</div>
+			<div class="btn btn-danger" ng-click="details.removeProduct(details.id)">Delete Product</div>
+		</div>
+	</div>
+</div>

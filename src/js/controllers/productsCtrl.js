@@ -6,6 +6,7 @@
 			vm.currentProduct = null;
 			vm.currentProductIndex = null;
 			vm.list = getProducts;
+			Item.products = vm.list
 
 			//bound functions
 			

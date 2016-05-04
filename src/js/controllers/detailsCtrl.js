@@ -1,6 +1,7 @@
 (function(){
 	angular.module('routerApp')
-		.controller('DetailsController', ['Item', 'getProducts', '$stateParams', function(Item, getProducts, $stateParams){
+		.controller('DetailsController', ['Item', 'getProducts', '$stateParams', 'Auth', 
+								  function(Item, getProducts, $stateParams, Auth){
 			var vm = this;
 			var id = $stateParams.productId;
 			id = +id;
@@ -8,6 +9,12 @@
 			//bound variables
 			vm.list = getProducts;
 			vm.currentProduct = vm.list[findById(id, vm.list)];
+			vm.isAdmin = Auth.isAdmin();
+			vm.formIsShowing = false;
+
+			vm.toggleForm = toggleForm;
+			vm.putProduct = putProduct;
+			vm.removeProduct = removeProduct;
 			console.log(vm.list);
 
 
@@ -19,6 +26,22 @@
 					}
 				}
 				return null;
+			}
+
+			function toggleForm(){
+				vm.formIsShowing = !vm.formIsShowing;
+			}
+
+			function putProduct(updatedObj, prodId){
+				Item.put(updatedObj, prodId).then(function(response){
+					console.log(response.data);
+				})
+			}
+
+			function removeProduct(prodId){
+				Item.remove(prodId).then(function(response){
+					console.log(response.data);
+				})
 			}
 			
 		}]);

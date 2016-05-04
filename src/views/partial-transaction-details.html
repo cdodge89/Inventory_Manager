@@ -1,10 +1,39 @@
-<div class="col-md-3"></div>
-<div class="col-md-3">Name</div>
-<div class="col-md-3">Amount</div>
-<div class="col-md-3">Transaction Id</div>
-<div ng-repeat="sub in transaction.subTransactions" class="row">
-	<div class="col-md-3"><img class="cart-img" ng-src="{{sub.imgThumbnail}}"></div>
-	<div class="col-md-3">{{sub.name}}</div>
-	<div class="col-md-3">{{sub.amt}}</div>
-	<div class="col-md-3">{{sub.transId}}</div>
+<div class="row">
+	<div class="col-md-4">
+		<h3 ng-show="!transaction.editMode">
+			{{transaction.types[transaction.transaction.type.id - 1]}} 
+			<i class="fa fa-pencil-square-o" aria-hidden="true" ng-click="transaction.toggleEdit()"></i>
+		</h3>
+		<h3 ng-show="transaction.editMode">
+			<select ng-model="transaction.newTransaction.type.description">
+				<option ng-repeat="type in transaction.types">{{type}}</option>
+			</select> 
+			<i class="fa fa-times" aria-hidden="true" ng-click="transaction.toggleEdit()"></i>
+			<i class="fa fa-check" aria-hidden="true" ng-click="transaction.putTransaction(transaction.id, transaction.newTransaction)"></i>
+		</h3>
+	</div>
+		
+</div>
+<div class="row">
+	<!-- <div class="col-md-3"></div> -->
+	<div class="col-md-3">Name</div>
+	<div class="col-md-3">Amount</div>
+	
+</div>
+<div ng-repeat="sub in transaction.transaction.subTransactions" class="row">
+	<!-- <div class="col-md-3"><img class="cart-img" ng-src="{{sub.imgThumbnail}}"></div> -->
+	<div class="col-md-3" ng-show="!transaction.editMode">{{sub.name}}</div>
+	<div class= "col-md-3" ng-show="transaction.editMode">
+		<select ng-model="transaction.newTransaction.subTransactions[$index].id">
+			<option ng-repeat="product in transaction.products"><span>{{product.id}}</span> - <span>{{product.name}}</span></option>
+		</select>
+	</div>
+	<div class="col-md-3" ng-show="!transaction.editMode">{{sub.amt}}</div>
+	<div class="col-md-3" ng-show="transaction.editMode">
+		<input ng-model="transaction.newTransaction.subTransactions[$index].qty" type="number" min="0" step="1">
+	</div>
+</div>
+<div>
+	<div class="col-md-12 left" ng-show="transaction.transaction.note && !transaction.editMode"><h4>Notes - {{transaction.transaction.note}}</h4></div>
+	<div class="col-md-12 left" ng-show="transaction.editMode">Notes - <input type="text" ng-model="transaction.newTransaction.note"></div>
 </div>

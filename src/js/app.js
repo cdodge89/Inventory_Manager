@@ -151,7 +151,12 @@
 					return Transaction.getByTransId($stateParams.transId).then(function(response){
 						return response.data;
 					});
-				}]
+				}],
+				getAllProducts: function(Item){
+					return Item.get().then(function(response){
+						return response.data;
+					});
+				}
 			},
 			controller: 'TransactionDetailsController as transaction'
 		})

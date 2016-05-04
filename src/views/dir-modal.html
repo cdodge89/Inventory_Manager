@@ -1,34 +1,17 @@
 <div id="myModal" class="myModal" ng-show="vm.isModalShowing">
   <!-- Modal content -->
-  <div class="modal-content">
-  	<div class="row">
-  		<div class="col-md-11">
-  			<div class="row">
-		  		<div class="col-md-2">Name</div>
-		  		<div class="col-md-2">Description</div>
-		  		<div class="col-md-2">Inventory</div>
-		  		<div class="col-md-2">Cost</div>
-		  		<div class="col-md-2">Price</div>
-		  		<div class="col-md-2">Image Link</div>
-		  	</div>
-		  	<div class="row">
-		  		<div class="col-md-2"><input type="text" ng-model="vm.newProduct.name" placeholder="Name"></div>  	
-			  	<div class="col-md-2"><input type="text" ng-model="vm.newProduct.description" placeholder="Description"></div>
-			  	<div class="col-md-2"><input type="number" min="0" step="1" ng-model="vm.newProduct.amt" placeholder="Inventory"></div>  	
-			  	<div class="col-md-2"><input type="number" min="0" ng-model="vm.newProduct.cost" placeholder="Cost"></div>  
-			  	<div class="col-md-2"><input type="number" min="0" ng-model="vm.newProduct.price" placeholder="Price"></div>  
-			  	<div class="col-md-2"><input type="text" ng-model="vm.newProduct.imgThumbnail" placeholder="Image Link"></div> 
-		  	</div>
-  		</div>
-  		<div class="col-md-1">
-  			<div class="row">
-  				<span class="close" ng-click="vm.closeModal()"><i class="fa fa-times" aria-hidden="true"></i></span>
-  			</div>
-  			<div class="row">
-  				<span class="close" ng-click="vm.postNewProduct(vm.newProduct)"><i class="fa fa-plus" aria-hidden="true"></i></span>
-  			</div>
-  			
-  		</div>
-  	</div>
-  </div>
+    <div class="modal-content">
+      <div class="row">
+        <div class="col-md-11">
+  	       <new-product-form ng-if="vm.isProduct"></new-product-form>
+           <new-transaction-form ng-if="!vm.isProduct"></new-transaction-form>
+        </div>
+        <div class="col-md-1">
+          <div class="row">
+            <span class="close" ng-click="vm.closeModal()"><i class="fa fa-times" aria-hidden="true"></i></span>
+          </div>
+          
+        </div>
+      </div>
+    </div>
 </div>

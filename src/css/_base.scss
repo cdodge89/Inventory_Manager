@@ -4,6 +4,30 @@
 	background-color: #00B263;
 }
 
+.active{
+    color: white;
+    background: #00B263;
+}
+.active:hover{
+    color:white;
+}
+
+input{
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+select{
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding: 3px;
+
+}
+
+option{
+    padding: 2px;
+}
+
 a{
 	color: white;
 }
@@ -34,6 +58,10 @@ ul{
 	width: 80%;
 }
 
+.details-container{
+    width: 50%;
+}
+
 .thumbnail{
 	width: 100%;
 	height: 100%;
@@ -58,7 +86,7 @@ img{
 .info-row{
 	height: 86%;
 }
-.btn{
+.productButton{
 	width: 50%;
 }
 .btn-purchase{
@@ -139,6 +167,11 @@ hr{
 	width: 50px;
 }
 
+.details-img{
+    height: 250px;
+    width: 250px;
+}
+
 .cart-container{
 	width: 70%
 }
@@ -191,4 +224,41 @@ hr{
 
 .admin-header{
     text-align: center;
+}
+
+.transIcon{
+    font-size: 1.5em;
+}
+
+.no-padding{
+    padding: 0px;
+}
+
+.left{
+    text-align: left;
+}
+
+.right{
+    text-align: right;
+}
+
+.center{
+    text-align: center;
+    margin: 0 auto;
+}
+
+.padding-top{
+    padding-top: 20px;
+}
+
+.padding-bottom{
+    padding-bottom: 20px;
+}
+
+.margin-top{
+    margin-top: 20px;
+}
+
+.margin-bottom{
+    margin-bottom: 20px;
 }

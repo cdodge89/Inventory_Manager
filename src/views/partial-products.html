@@ -6,7 +6,7 @@
 					<div class="row info-row">
 						<div class="col-md-6">
 							<div class="name caption">{{product.name}}</div>
-							<div>{{product.price}}</div>
+							<div>{{product.price | currency}}</div>
 						</div>
 						<div class="col-md-6">
 							<img ng-src="{{product.imgThumbnail}}">
@@ -15,8 +15,8 @@
 					<div class="row button-row">
 						<div class="col-md-12">
 							<div class="btn-group" role="group" aria-label="...">
-							  <div class="btn btn-default" ui-sref="product-details({productId: product.id})">More Info</div>
-							  <div class="btn btn-purchase" ui-sref="purchase({productId: product.id})"> Purchase</div>
+							  <div class="btn btn-default productButton" ui-sref="product-details({productId: product.id})">More Info</div>
+							  <div class="btn btn-purchase productButton" ui-sref="purchase({productId: product.id})"> Purchase</div>
 							</div>
 						</div>
 					</div>

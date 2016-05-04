@@ -1,6 +1,6 @@
 (function(){
 	angular.module('routerApp')
-		.controller('NavbarController', ['Auth', 'Orders', function(Auth, Orders){
+		.controller('NavbarController', ['Auth', 'Orders','$document', function(Auth, Orders, $document){
 			var vm = this;
 
 			vm.isLoggedIn = isLoggedIn;
@@ -42,7 +42,7 @@
 			}
 
 // Close the dropdown menu if the user clicks outside of it
-			window.onclick = function(event) {
+			$document.on('click', function(event) {
 			  if (!event.target.matches('.dropbtn')) {
 
 			    var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -54,6 +54,6 @@
 			      }
 			    }
 			  }
-			}
+			});
 		}]);
 })();
