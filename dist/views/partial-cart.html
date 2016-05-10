@@ -16,7 +16,8 @@
 			</div>
 		</li>
 		<li>
-			<div class="btn btn-purchase" ng-show="cart.list.length > 0">Checkout</div>
+			<div ng-click="cart.postTransaction(cart.cart)" class="btn btn-purchase" ng-show="cart.list.length > 0">Checkout</div>
+			<h3 ng-show="cart.list.length === 0">Cart Empty</h3>
 		</li>
 	</ul>
 </div>

@@ -2,9 +2,9 @@
 	angular.module('routerApp').factory('Cart', cart);
 
 	cart.$inject=['Transaction']
-	function cart(){
+	function cart(Transaction){
 		var service = {
-			// postPurchase: postPurchase,
+			postPurchase: postPurchase,
 			// addToCart: addToCart,
 			cart: {
 				type:{
@@ -20,15 +20,14 @@
 
 		return service;
 
-		// function postPurchase(transObj){
-		// 	Transaction.post(transobj).then(function(response){
-		// 		console.log(response.data);
-		// 	});
-		// }
-
+		function postPurchase(transObj){
+			Transaction.post(transObj).then(function(response){
+				console.log(response.data);
+			});
+		}
 		// function addToCart(transObj){
 		// 	service.cart.subTransactions.push(transObj);
 		// }
 	}
-
+	
 })();

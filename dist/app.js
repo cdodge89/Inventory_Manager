@@ -45549,10 +45549,17 @@ angular.module('ui.router.state')
 	angular.module('routerApp')
 		.controller('CartController', ['Auth', 'Transaction', 'Cart', 'getCartProducts', function(Auth, Transaction, Cart, getCartProducts){
 			var vm = this;
-			vm.list = Cart.cart.subTransactions;
+			vm.cart = Cart.cart
+			vm.list = vm.cart.subTransactions;
 			vm.productsList = getCartProducts;
 			vm.list = addDetails(vm.list, vm.productsList);
 			console.log('cartlist ',vm.list);
+			vm.postTransaction = postTransaction;
+			
+			function postTransaction(postObj){
+				postObj.subTransactions = removeDetails(vm.list);
+				Cart.postPurchase(postObj);
+			}
 
 			//helper functions
 			function findById(id, productArr){
@@ -46286,9 +46293,9 @@ angular.module('ui.router.state')
 	angular.module('routerApp').factory('Cart', cart);
 
 	cart.$inject=['Transaction']
-	function cart(){
+	function cart(Transaction){
 		var service = {
-			// postPurchase: postPurchase,
+			postPurchase: postPurchase,
 			// addToCart: addToCart,
 			cart: {
 				type:{
@@ -46304,17 +46311,16 @@ angular.module('ui.router.state')
 
 		return service;
 
-		// function postPurchase(transObj){
-		// 	Transaction.post(transobj).then(function(response){
-		// 		console.log(response.data);
-		// 	});
-		// }
-
+		function postPurchase(transObj){
+			Transaction.post(transObj).then(function(response){
+				console.log(response.data);
+			});
+		}
 		// function addToCart(transObj){
 		// 	service.cart.subTransactions.push(transObj);
 		// }
 	}
-
+	
 })();
 (function(){
 	angular.module('routerApp').factory('OrderHistory', orderHistory);
