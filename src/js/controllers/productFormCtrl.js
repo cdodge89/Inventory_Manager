@@ -18,6 +18,7 @@
 				if(newProd.amt && newProd.description && newProd.imgThumbnail && newProd.name && newProd.cost && newProd.price){
 					Item.post(newProd).then(function(response){
 						Item.addToProducts(newProd);
+						vm.isModalShowing = false;
 						console.log(response.data);
 					});
 				} else{

@@ -4,7 +4,8 @@
 			templateUrl: 'views/dir-new-transaction-form',
 			scope: {
 				item: '=',
-				itemClicked: '&'
+				itemClicked: '&',
+				isModalShowing: '='
 			},
 			controller: 'TransactionFormController',
 			controllerAs: 'vm',

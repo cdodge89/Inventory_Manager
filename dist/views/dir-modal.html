@@ -3,8 +3,8 @@
     <div class="modal-content">
       <div class="row">
         <div class="col-md-11">
-  	       <new-product-form ng-if="vm.isProduct"></new-product-form>
-           <new-transaction-form ng-if="!vm.isProduct"></new-transaction-form>
+  	       <new-product-form ng-if="vm.isProduct" is-modal-showing="vm.isModalShowing"></new-product-form>
+           <new-transaction-form ng-if="!vm.isProduct" is-modal-showing="vm.isModalShowing"></new-transaction-form>
         </div>
         <div class="col-md-1">
           <div class="row">

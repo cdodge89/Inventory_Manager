@@ -1,6 +1,6 @@
 (function(){
 	angular.module('routerApp')
-		.controller('TransactionFormController', ['Item', 'Transaction', function(Item, Transaction){
+		.controller('TransactionFormController', ['Item', 'Transaction', '$location', function(Item, Transaction, $location){
 			var vm = this;
 
 			vm.products = Item.products;
@@ -62,6 +62,7 @@
 					Transaction.post(newTrans).then(function(response){
 						console.log('new transaction posted - ',response.data);
 						vm.transactions.push(newTrans);
+						vm.isModalShowing = false;
 					});
 				} else{
 					alert('Please fill out all of the fields in each subtransaction');

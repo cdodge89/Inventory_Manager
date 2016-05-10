@@ -4,7 +4,8 @@
 			templateUrl: 'views/dir-new-product-form',
 			scope: {
 				item: '=',
-				itemClicked: '&'
+				itemClicked: '&',
+				isModalShowing: '='
 			},
 			controller: 'ProductFormController',
 			controllerAs: 'vm',

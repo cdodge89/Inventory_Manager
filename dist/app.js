@@ -45839,6 +45839,7 @@ angular.module('ui.router.state')
 				if(newProd.amt && newProd.description && newProd.imgThumbnail && newProd.name && newProd.cost && newProd.price){
 					Item.post(newProd).then(function(response){
 						Item.addToProducts(newProd);
+						vm.isModalShowing = false;
 						console.log(response.data);
 					});
 				} else{
@@ -46001,7 +46002,7 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('TransactionFormController', ['Item', 'Transaction', function(Item, Transaction){
+		.controller('TransactionFormController', ['Item', 'Transaction', '$location', function(Item, Transaction, $location){
 			var vm = this;
 
 			vm.products = Item.products;
@@ -46063,6 +46064,7 @@ angular.module('ui.router.state')
 					Transaction.post(newTrans).then(function(response){
 						console.log('new transaction posted - ',response.data);
 						vm.transactions.push(newTrans);
+						vm.isModalShowing = false;
 					});
 				} else{
 					alert('Please fill out all of the fields in each subtransaction');
@@ -46175,7 +46177,8 @@ angular.module('ui.router.state')
 			templateUrl: 'views/dir-new-product-form',
 			scope: {
 				item: '=',
-				itemClicked: '&'
+				itemClicked: '&',
+				isModalShowing: '='
 			},
 			controller: 'ProductFormController',
 			controllerAs: 'vm',
@@ -46203,7 +46206,8 @@ angular.module('ui.router.state')
 			templateUrl: 'views/dir-new-transaction-form',
 			scope: {
 				item: '=',
-				itemClicked: '&'
+				itemClicked: '&',
+				isModalShowing: '='
 			},
 			controller: 'TransactionFormController',
 			controllerAs: 'vm',
