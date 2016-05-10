@@ -1,6 +1,7 @@
 (function(){
 	angular.module('routerApp')
-		.controller('PurchaseController',['Cart' ,'$location','Item', 'getProductsForPurchase', '$stateParams','Auth', function(Cart ,$location,Item, getProductsForPurchase, $stateParams, Auth){
+		.controller('PurchaseController',['Cart' ,'$location','Item', 'getProductsForPurchase', '$stateParams','Auth', 
+									function(Cart ,$location,Item, getProductsForPurchase, $stateParams, Auth){
 			var vm = this;
 			var id = $stateParams.productId;
 			console.log('stateparams',$stateParams);
@@ -21,6 +22,7 @@
 			function addToCart(transactionObj){
 				if(Auth.checkLoggedIn()){
 					Cart.cart.subTransactions.push(vm.currentTransaction);
+					$location.path('products');
 					console.log('Cart ', Cart.cart)
 				} else{
 					$location.path('login');

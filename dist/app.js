@@ -45547,7 +45547,8 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('CartController', ['Auth', 'Transaction', 'Cart', 'getCartProducts', function(Auth, Transaction, Cart, getCartProducts){
+		.controller('CartController', ['Auth', 'Transaction', 'Cart', 'getCartProducts', '$location', 
+								function(Auth, Transaction, Cart, getCartProducts, $location){
 			var vm = this;
 			vm.cart = Cart.cart
 			vm.list = vm.cart.subTransactions;
@@ -45559,6 +45560,7 @@ angular.module('ui.router.state')
 			function postTransaction(postObj){
 				postObj.subTransactions = removeDetails(vm.list);
 				Cart.postPurchase(postObj);
+				$location.path('products');
 			}
 
 			//helper functions
@@ -45874,7 +45876,8 @@ angular.module('ui.router.state')
 })();
 (function(){
 	angular.module('routerApp')
-		.controller('PurchaseController',['Cart' ,'$location','Item', 'getProductsForPurchase', '$stateParams','Auth', function(Cart ,$location,Item, getProductsForPurchase, $stateParams, Auth){
+		.controller('PurchaseController',['Cart' ,'$location','Item', 'getProductsForPurchase', '$stateParams','Auth', 
+									function(Cart ,$location,Item, getProductsForPurchase, $stateParams, Auth){
 			var vm = this;
 			var id = $stateParams.productId;
 			console.log('stateparams',$stateParams);
@@ -45895,6 +45898,7 @@ angular.module('ui.router.state')
 			function addToCart(transactionObj){
 				if(Auth.checkLoggedIn()){
 					Cart.cart.subTransactions.push(vm.currentTransaction);
+					$location.path('products');
 					console.log('Cart ', Cart.cart)
 				} else{
 					$location.path('login');
@@ -46313,6 +46317,7 @@ angular.module('ui.router.state')
 
 		function postPurchase(transObj){
 			Transaction.post(transObj).then(function(response){
+				service.cart.subTransactions = [];
 				console.log(response.data);
 			});
 		}

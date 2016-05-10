@@ -1,6 +1,7 @@
 (function(){
 	angular.module('routerApp')
-		.controller('CartController', ['Auth', 'Transaction', 'Cart', 'getCartProducts', function(Auth, Transaction, Cart, getCartProducts){
+		.controller('CartController', ['Auth', 'Transaction', 'Cart', 'getCartProducts', '$location', 
+								function(Auth, Transaction, Cart, getCartProducts, $location){
 			var vm = this;
 			vm.cart = Cart.cart
 			vm.list = vm.cart.subTransactions;
@@ -12,6 +13,7 @@
 			function postTransaction(postObj){
 				postObj.subTransactions = removeDetails(vm.list);
 				Cart.postPurchase(postObj);
+				$location.path('products');
 			}
 
 			//helper functions

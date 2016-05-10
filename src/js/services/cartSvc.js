@@ -22,6 +22,7 @@
 
 		function postPurchase(transObj){
 			Transaction.post(transObj).then(function(response){
+				service.cart.subTransactions = [];
 				console.log(response.data);
 			});
 		}
