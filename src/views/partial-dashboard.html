@@ -3,12 +3,12 @@
 	
 	<h3>Product Summaries</h3>
 	<div class="row">
-		<div class="col-md-3">Product</div>
-		<div class="col-md-1">Sale</div>
-		<div class="col-md-1">Lost/Stolen</div>
-		<div class="col-md-2">Returned To Supplier</div>
+		<div class="col-md-3 table-header">Product</div>
+		<div class="col-md-1 table-header">Sale</div>
+		<div class="col-md-1 table-header">Lost/Stolen</div>
+		<div class="col-md-2 table-header">Returned To Supplier</div>
 		<!-- <div class="col-md-2">Inventory Purchase</div> -->
-		<div class="col-md-2">Returned</div>
+		<div class="col-md-2 table-header">Returned</div>
 		<!-- <div class="col-md-2">Returned Defective</div> -->
 	</div>
 	<div ui-sref="transactions-by-product-id({productId: product.id})" class="row" ng-repeat="product in dashboard.productSummaries">
@@ -21,12 +21,12 @@
 	<h3>Transaction Summaries</h3>
 	<div class="row">
 		<div class="col-md-2">Transaction Type</div>
-		<div class="col-md-1" ng-click="dashboard.filterBy(1)">Sale</div>
-		<div class="col-md-2" ng-click="dashboard.filterBy(2)">Lost/Stolen</div>
-		<div class="col-md-2" ng-click="dashboard.filterBy(3)">Returned To Supplier</div>
-		<div class="col-md-2" ng-click="dashboard.filterBy(4)">Inventory Purchase</div>
-		<div class="col-md-1" ng-click="dashboard.filterBy(5)">Returned</div>
-		<div class="col-md-2" ng-click="dashboard.filterBy(6)">Returned Defective</div>
+		<div class="col-md-1 table-header-click" ng-click="dashboard.filterBy(1)">Sale</div>
+		<div class="col-md-2 table-header-click" ng-click="dashboard.filterBy(2)">Lost/Stolen</div>
+		<div class="col-md-2 table-header-click" ng-click="dashboard.filterBy(3)">Returned To Supplier</div>
+		<div class="col-md-2 table-header-click" ng-click="dashboard.filterBy(4)">Inventory Purchase</div>
+		<div class="col-md-1 table-header-click" ng-click="dashboard.filterBy(5)">Returned</div>
+		<div class="col-md-2 table-header-click" ng-click="dashboard.filterBy(6)">Returned Defective</div>
 	</div>
 	<div class="row">
 		<div class="col-md-2">Number of Transactions</div>
@@ -72,13 +72,13 @@
 	</div>
 	<h3>Transactions</h3>
 	<div class="row">
-		<div class="col-md-1">Transaction Id</div>
-		<div class="col-md-4">Transaction Type</div>
-		<div class="col-md-2">Transaction Date</div>
-		<div class="col-md-2">Notes</div>
-		<div class="col-md-1">Amount</div>
-		<div class="col-md-1">Price</div>
-		<div class="col-md-1">Cost</div>
+		<div class="col-md-1 table-header">Transaction Id</div>
+		<div class="col-md-4 table-header">Transaction Type</div>
+		<div class="col-md-2 table-header">Transaction Date</div>
+		<div class="col-md-2 table-header">Notes</div>
+		<div class="col-md-1 table-header">Amount</div>
+		<div class="col-md-1 table-header">Price</div>
+		<div class="col-md-1 table-header">Cost</div>
 	</div>
 	<div class="row" ng-repeat="transaction in dashboard.currentTransactions">
 		<div ui-sref="transaction-details({transId: transaction.id})">

@@ -235,4 +235,12 @@ hr {
 .margin-bottom {
   margin-bottom: 20px; }
 
+.table-header {
+  cursor: pointer;
+  font-weight: bold; }
+
+.table-header-click {
+  cursor: pointer;
+  font-weight: bold; }
+
 /*# sourceMappingURL=main.css.map */
