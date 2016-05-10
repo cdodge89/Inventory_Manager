@@ -29,7 +29,7 @@
 			}
 
 			function put(transId, putObj){
-				return $http.put('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)				
+				return $http.put('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId, putObj);				
 			}
 
 			function del(transId){

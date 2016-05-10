@@ -45944,13 +45944,12 @@ angular.module('ui.router.state')
 			var vm = this;
 
 			vm.transaction = getTransactionDetails;
-			vm.newTransaction = {};
+			// vm.newTransaction = {};
 			vm.products = getAllProducts;
 			console.log('prods ', vm.products);
 			vm.id = vm.transaction.id;
-			// console.log('trans ', vm.transaction)
-			// vm.subTransactions = vm.transaction.subTransactions;
-			vm.types = ['Sale', 'Lost/Stolen','Returned To Supplier', 'Inventory Purchase', 'Returned', 'Returned Defective']
+			vm.types = ['Sale', 'Lost/Stolen','Returned To Supplier', 'Inventory Purchase', 'Returned', 'Returned Defective'];
+			vm.transType = vm.types[vm.transaction.type.id-1]; //*
 			vm.editMode = false;
 			vm.toggleEdit = toggleEdit;
 			vm.putTransaction = putTransaction;
@@ -45970,10 +45969,21 @@ angular.module('ui.router.state')
 				return null;
 			}
 
-			function putTransaction(transId, putObj){
-				// Transaction.put(transId, putObj).then(function(response){
-				// 	console.log(response.data);
-				// });
+			function putTransaction(transId, transObj){
+				var putObj = {};
+				putObj.type = {id: vm.types.indexOf(vm.transType),description: vm.transType};
+				putObj.date= transObj.date;
+				putObj.note= transObj.note;
+				putObj.altersId= transId;
+				putObj.subTransactions = [];
+				for(var i = 0; i < transObj.subTransactions.length; i++){
+					putObj.subTransactions.push({});
+					putObj.subTransactions[i].id = transObj.subTransactions[i].productId;
+					putObj.subTransactions[i].qty = transObj.subTransactions[i].amt;
+				}
+				Transaction.put(transId, putObj).then(function(response){
+					console.log(response.data);
+				});
 				console.log('obj ',putObj);
 			}
 		}]);
@@ -46477,7 +46487,7 @@ angular.module('ui.router.state')
 			}
 
 			function put(transId, putObj){
-				return $http.put('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId)				
+				return $http.put('http://wta-inventorybackend.herokuapp.com/api/v1/transaction/'+transId, putObj);				
 			}
 
 			function del(transId){
