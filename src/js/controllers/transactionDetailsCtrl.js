@@ -1,16 +1,25 @@
 (function(){
 	angular.module('routerApp')
-		.controller('TransactionDetailsController', ['getAllProducts','Transaction', 'Item', 'getTransactionDetails', '$stateParams', 
-											function(getAllProducts,Transaction, Item, getTransactionDetails, $stateParams){
+		.controller('TransactionDetailsController', ['getAllProducts','Transaction', 'Item', 'getTransactionDetails', '$stateParams', '$scope', 
+											function(getAllProducts,Transaction, Item, getTransactionDetails, $stateParams, $scope){
 			var vm = this;
 
 			vm.transaction = getTransactionDetails;
+			vm.isOpen = false;
 			// vm.newTransaction = {};
 			vm.products = getAllProducts;
 			console.log('prods ', vm.products);
 			vm.id = vm.transaction.id;
-			vm.types = ['Sale', 'Lost/Stolen','Returned To Supplier', 'Inventory Purchase', 'Returned', 'Returned Defective'];
+			vm.types = [
+				{id: 1, description: 'Sale'}, 
+				{id: 2, description: 'Lost/Stolen'} ,
+				{id: 3, description: 'Returned To Supplier'}, 
+				{id: 4, description: 'Inventory Purchase'}, 
+				{id: 5, description: 'Returned'}, 
+				{id: 6, description: 'Returned Defective'}
+			];
 			vm.transType = vm.types[vm.transaction.type.id-1]; //*
+			vm.date = new Date(vm.transaction.date);
 			vm.editMode = false;
 			vm.toggleEdit = toggleEdit;
 			vm.putTransaction = putTransaction;
@@ -30,12 +39,12 @@
 				return null;
 			}
 
-			function putTransaction(transId, transObj){
+			function putTransaction(transId, transObj, transType){
 				var putObj = {};
-				putObj.type = {id: vm.types.indexOf(vm.transType),description: vm.transType};
-				putObj.date= transObj.date;
-				putObj.note= transObj.note;
-				putObj.altersId= transId;
+				putObj.type = transType;
+				putObj.date = transObj.date;
+				console.log('date ',putObj.date);
+				putObj.note = transObj.note;
 				putObj.subTransactions = [];
 				for(var i = 0; i < transObj.subTransactions.length; i++){
 					putObj.subTransactions.push({});
@@ -47,5 +56,9 @@
 				});
 				console.log('obj ',putObj);
 			}
+			
+			$scope.open2 = function() {
+				vm.isOpen = true;
+			};
 		}]);
 })();

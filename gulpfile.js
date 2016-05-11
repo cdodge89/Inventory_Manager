@@ -17,6 +17,7 @@ var   gulp = require('gulp'),
         'dist/bower_components/angular/angular.js',
         'dist/bower_components/angular-ui-router/release/angular-ui-router.js',
         'dist/bower_components/ngstorage/ngStorage.js',
+        'dist/bower_components/angular-bootstrap/ui-bootstrap-tpls.js',
         'src/js/**/*.js'
         ])
     .pipe(maps.init())

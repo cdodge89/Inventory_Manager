@@ -1,15 +1,14 @@
 <div class="row">
 	<div class="col-md-4">
 		<h3 ng-show="!transaction.editMode">
-			{{transaction.transType}} 
+			{{transaction.transType.description}} 
 			<i class="fa fa-pencil-square-o" aria-hidden="true" ng-click="transaction.toggleEdit()"></i>
 		</h3>
 		<h3 ng-show="transaction.editMode">
-			<select ng-model="transaction.transType">
-				<option ng-repeat="type in transaction.types">{{type}}</option>
+			<select ng-model="transaction.transType" ng-options="type as type.description for type in transaction.types track by type.id">
 			</select> 
 			<i class="fa fa-times" aria-hidden="true" ng-click="transaction.toggleEdit()"></i>
-			<i class="fa fa-check" aria-hidden="true" ng-click="transaction.putTransaction(transaction.transaction.id, transaction.transaction)"></i>
+			<i class="fa fa-check" aria-hidden="true" ng-click="transaction.putTransaction(transaction.transaction.id, transaction.transaction, transaction.transType)"></i>
 		</h3>
 	</div>
 		
@@ -37,3 +36,12 @@
 	<div class="col-md-12 left" ng-show="transaction.transaction.note && !transaction.editMode"><h4>Notes - {{transaction.transaction.note}}</h4></div>
 	<div class="col-md-12 left" ng-show="transaction.editMode">Notes - <input type="text" ng-model="transaction.transaction.note"></div>
 </div>
+	<div class="col-md-2" ng-show="transaction.editMode">
+        <p class="input-group">
+          <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="transaction.date" is-open="transaction.isOpen" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+          <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+        </p>
+      </div>
+    </div>

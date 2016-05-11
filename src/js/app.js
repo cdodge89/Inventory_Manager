@@ -1,5 +1,5 @@
 (function(){
-	angular.module('routerApp', ['ngStorage','ui.router']).config(function($stateProvider, $urlRouterProvider){
+	angular.module('routerApp', ['ngStorage','ui.router', 'ui.bootstrap']).config(function($stateProvider, $urlRouterProvider){
 		$urlRouterProvider.otherwise('/products');
 
 		$stateProvider
