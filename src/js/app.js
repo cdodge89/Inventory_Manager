@@ -192,7 +192,7 @@
 					return config;
 				},
 				'responseError': function (response) {
-					if([401].indexOf(response.status)){
+					if(401 === response.status){
 						delete $localStorage.token;
 						$location.path('/login'); //YOU MIGHT WANT TO CHANGE THIS ROUTE
 					}
