@@ -6,7 +6,11 @@
 			{{transaction.id}}
 		</div>
 		<div class="col-md-3">
+			{{transaction.totalPrice | currency}}
+		</div>
+		<div class="col-md-3">
 			{{transaction.date | date:'medium'}}
 		</div>
+		<div class="col-md-1 btn btn-danger" ng-click="history.returnOrder(transaction.id)">Return</div>
 	</div>
 </ul>

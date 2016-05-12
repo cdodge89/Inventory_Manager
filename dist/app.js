@@ -53145,7 +53145,13 @@ angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInli
 			var vm = this;
 
 			vm.orders = getHistory;
+			
+			vm.returnOrder = returnOrder;
 			console.log('order history ',vm.orders);
+			
+			function returnOrder(id){
+				
+			}
 		}]);
 })();
 (function(){
