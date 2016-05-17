@@ -17,14 +17,20 @@
 				<th>Price</th>
 				<th>Cost</th>
 			</tr>
-		</table>
-		<table>
-			<admin-transaction ng-repeat="transaction in admin.transactions" transaction="transaction"></admin-transaction>
+			<!--<admin-transaction ng-repeat="transaction in admin.transactions" transaction="transaction"></admin-transaction>-->
+			<tr ui-sref="transaction-details({transId: vm.transaction.id})" ng-repeat="transaction in admin.transactions" transaction="transaction">
+				<td>{{transaction.id}}</td>
+				<td>{{transaction.type.description}}</td>
+				<td>{{transaction.date|date:'medium'}}</td>
+				<td>{{transaction.note}}</td>
+				<td>{{transaction.totalAmt}}</td>
+				<td>{{transaction.totalPrice|currency}}</td>
+				<td>{{transaction.totalCost|currency}}</td>
+			</tr>
 		</table>
 </div>
 
 <modal item="admin.currentItem" ng-if="admin.isModalShowing" is-modal-showing="admin.isModalShowing"></modal>
-
 <!-- Trigger/Open The Modal -->
 <!-- <button id="myBtn">Open Modal</button> -->
 

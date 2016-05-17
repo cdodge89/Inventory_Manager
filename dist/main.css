@@ -248,4 +248,7 @@ hr {
   width: 15px;
   height: 10px; }
 
+tr:nth-of-type(even) {
+  background: rgba(0, 178, 99, 0.1); }
+
 /*# sourceMappingURL=main.css.map */

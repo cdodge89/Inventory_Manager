@@ -1,7 +1,7 @@
 .navbar{
 	border-radius: 0px;
 	padding-right: 10px;
-	background-color: #00B263;
+	background-color: #00B263; //o, 178, 99
 }
 
 .active{
@@ -276,4 +276,8 @@ hr{
 .myDatePicker{
     width: 15px;
     height: 10px;
+}
+
+tr:nth-of-type(even){
+    background: rgba(0,178,99,.1);
 }
