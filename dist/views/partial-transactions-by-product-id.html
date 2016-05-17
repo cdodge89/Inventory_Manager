@@ -1,19 +1,21 @@
 <div class="container">
 	<h1>Id</h1>
-	<div class="row">
-		<div class="col-md-2">Transaction Id</div>
-		<div class="col-md-2">Type</div>
-		<div class="col-md-2">Total Price</div>
-		<div class="col-md-2">Total Cost</div>
-		<div class="col-md-2">Total Amount</div>
-		<div class="col-md-2">Date</div>
-	</div>
-	<div class="row" ng-repeat="transaction in product.transactions">
-		<div class="col-md-2">{{transaction.id}}</div>	
-		<div class="col-md-2">{{transaction.type.description}}</div>	
-		<div class="col-md-2">{{transaction.totalPrice | currency}}</div>	
-		<div class="col-md-2">{{transaction.totalCost | currency}}</div>	
-		<div class="col-md-2">{{transaction.totalAmt}}</div>	
-		<div class="col-md-2">{{transaction.date | date:'medium'}}</div>	
-	</div>
+	<table>
+		<tr>
+			<td>Transaction Id</td>
+			<td>Type</td>
+			<td>Total Price</td>
+			<td>Total Cost</td>
+			<td>Total Amount</td>
+			<td>Date</td>
+		</tr>
+		<tr ng-repeat="transaction in product.transactions">
+			<td>{{transaction.id}}</td>	
+			<td>{{transaction.type.description}}</td>	
+			<td>{{transaction.totalPrice | currency}}</td>	
+			<td>{{transaction.totalCost | currency}}</td>	
+			<td>{{transaction.totalAmt}}</td>	
+			<td>{{transaction.date | date:'medium'}}</td>	
+		</tr>
+	</table>
 </div>
