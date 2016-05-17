@@ -1,16 +1,16 @@
 <h1>history</h1>
 
-<ul>
-	<div class="row" ng-repeat="transaction in history.orders">
-		<div class="col-md-3">
+<table>
+	<tr ng-repeat="transaction in history.orders">
+		<td>
 			{{transaction.id}}
-		</div>
-		<div class="col-md-3">
+		</td>
+		<td>
 			{{transaction.totalPrice | currency}}
-		</div>
-		<div class="col-md-3">
+		</td>
+		<td>
 			{{transaction.date | date:'medium'}}
-		</div>
-		<div class="col-md-1 btn btn-danger" ng-click="history.returnOrder(transaction.id)">Return</div>
-	</div>
-</ul>
+		</td>
+		<td class="btn btn-danger" ng-click="history.returnOrder(transaction.id)">Return</td>
+	</tr>
+</table>
