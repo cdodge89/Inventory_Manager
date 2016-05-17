@@ -11,15 +11,15 @@
 <div class="container cart-container">
 	<ul>
 		<new-transaction transaction-clicked="admin.showModal(clickedTransaction, false)"></new-transaction>
-		<div class="row">
-			<div class="col-md-1">Id</div>
-			<div class="col-md-4">Transaction Type</div>
-			<div class="col-md-2">Transaction Date</div>
-			<div class="col-md-2">Notes</div>
-			<div class="col-md-1">Amount</div>
-			<div class="col-md-1">Price</div>
-			<div class="col-md-1">Cost</div>
-		</div>
+		<tr>
+			<td>Id</td>
+			<td>Transaction Type</td>
+			<td>Transaction Date</td>
+			<td>Notes</td>
+			<td>Amount</td>
+			<td>Price</td>
+			<td>Cost</td>
+		</tr>
 		<admin-transaction ng-repeat="transaction in admin.transactions" transaction="transaction"></admin-transaction>
 	</ul>
 </div>

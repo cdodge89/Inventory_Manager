@@ -1,11 +1,11 @@
-<li ui-sref="transaction-details({transId: vm.transaction.id})">
-	<div class="row">	
-		<div class="col-md-1">{{vm.transaction.id}}</div>
-		<div class="col-md-4">{{vm.transaction.type.description}}</div>
-		<div class="col-md-2">{{vm.transaction.date|date:'medium'}}</div>
-		<div class="col-md-2">{{vm.transaction.note}}</div>
-		<div class="col-md-1">{{vm.transaction.totalAmt}}</div>
-		<div class="col-md-1">{{vm.transaction.totalPrice|currency}}</div>
-		<div class="col-md-1">{{vm.transaction.totalCost|currency}}</div>
-	</div>
-</li>
+<div>
+	<tr ui-sref="transaction-details({transId: vm.transaction.id})">
+		<td>{{vm.transaction.id}}</td>
+		<td>{{vm.transaction.type.description}}</td>
+		<td>{{vm.transaction.date|date:'medium'}}</td>
+		<td>{{vm.transaction.note}}</td>
+		<td>{{vm.transaction.totalAmt}}</td>
+		<td>{{vm.transaction.totalPrice|currency}}</td>
+		<td>{{vm.transaction.totalCost|currency}}</td>
+	</tr>
+</div>
