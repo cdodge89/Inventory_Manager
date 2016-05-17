@@ -3,13 +3,11 @@
 	<h3>Product Summaries</h3>
 	<table>	
 		<tr>
-			<td class="table-header">Product</td>
-			<td class="table-header">Sale</td>
-			<td class="table-header">Lost/Stolen</td>
-			<td class="table-header">Returned To Supplier</td>
-			<!-- <div class="col-md-2">Inventory Purchase</div> -->
-			<td class="table-header">Returned</td>
-			<!-- <div class="col-md-2">Returned Defective</div> -->
+			<th>Product</th>
+			<th>Sale</th>
+			<th>Lost/Stolen</th>
+			<th>Returned To Supplier</th>
+			<th>Returned</th>
 		</tr>
 		<tr ui-sref="transactions-by-product-id({productId: product.id})" ng-repeat="product in dashboard.productSummaries">
 			<td>{{product.name}}</td>
@@ -22,13 +20,13 @@
 		<h3>Transaction Summaries</h3>
 	<table>
 		<tr>
-			<td>Transaction Type</td>
-			<td table-header-click" ng-click="dashboard.filterBy(1)">Sale</td>
-			<td table-header-click" ng-click="dashboard.filterBy(2)">Lost/Stolen</td>
-			<td table-header-click" ng-click="dashboard.filterBy(3)">Returned To Supplier</td>
-			<td table-header-click" ng-click="dashboard.filterBy(4)">Inventory Purchase</td>
-			<td table-header-click" ng-click="dashboard.filterBy(5)">Returned</td>
-			<td table-header-click" ng-click="dashboard.filterBy(6)">Returned Defective</td>
+			<th>Transaction Type</th>
+			<th ng-click="dashboard.filterBy(1)">Sale</th>
+			<th ng-click="dashboard.filterBy(2)">Lost/Stolen</th>
+			<th ng-click="dashboard.filterBy(3)">Returned To Supplier</th>
+			<th ng-click="dashboard.filterBy(4)">Inventory Purchase</th>
+			<th ng-click="dashboard.filterBy(5)">Returned</th>
+			<th ng-click="dashboard.filterBy(6)">Returned Defective</th>
 		</tr>
 		<tr>
 			<td>Number of Transactions</td>
@@ -79,13 +77,13 @@
 		<h3>Transactions</h3>
 	<table>
 		<tr>
-			<td class="table-header">Transaction Id</td>
-			<td class="table-header">Transaction Type</td>
-			<td class="table-header">Transaction Date</td>
-			<td class="table-header">Notes</td>
-			<td class="table-header">Amount</td>
-			<td class="table-header">Price</td>
-			<td class="table-header">Cost</td>
+			<th>Transaction Id</th>
+			<th>Transaction Type</th>
+			<th>Transaction Date</th>
+			<th>Notes</th>
+			<th>Amount</th>
+			<th>Price</th>
+			<th>Cost</th>
 		</tr>
 		<tr ng-repeat="transaction in dashboard.currentTransactions">
 			<div ui-sref="transaction-details({transId: transaction.id})">

@@ -1,27 +1,26 @@
 <h1 class="admin-header">Products</h1>
 <div class="container cart-container">
-	<!-- <h2>Shopping Cart</h2> -->
-	<ul>
-		<new-product item-clicked="admin.showModal(clickedItem, true)"></new-product>
-		<admin-item ng-repeat="item in admin.products" item="item"></admin-item>
-	</ul>
+	<new-product item-clicked="admin.showModal(clickedItem, true)"></new-product>
+	<admin-item ng-repeat="item in admin.products" item="item"></admin-item>
 </div>
 
 <h1 class="admin-header">Transactions</h1>
 <div class="container cart-container">
-	<ul>
 		<new-transaction transaction-clicked="admin.showModal(clickedTransaction, false)"></new-transaction>
-		<tr>
-			<td>Id</td>
-			<td>Transaction Type</td>
-			<td>Transaction Date</td>
-			<td>Notes</td>
-			<td>Amount</td>
-			<td>Price</td>
-			<td>Cost</td>
-		</tr>
-		<admin-transaction ng-repeat="transaction in admin.transactions" transaction="transaction"></admin-transaction>
-	</ul>
+		<table>
+			<tr>
+				<th>Id</th>
+				<th>Transaction Type</th>
+				<th>Transaction Date</th>
+				<th>Notes</th>
+				<th>Amount</th>
+				<th>Price</th>
+				<th>Cost</th>
+			</tr>
+		</table>
+		<table>
+			<admin-transaction ng-repeat="transaction in admin.transactions" transaction="transaction"></admin-transaction>
+		</table>
 </div>
 
 <modal item="admin.currentItem" ng-if="admin.isModalShowing" is-modal-showing="admin.isModalShowing"></modal>
