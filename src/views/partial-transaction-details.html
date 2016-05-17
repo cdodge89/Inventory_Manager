@@ -2,7 +2,7 @@
 	<div class="col-md-4">
 		<h3 ng-show="!transaction.editMode">
 			{{transaction.transType.description}} 
-			<i class="fa fa-pencil-square-o" aria-hidden="true" ng-click="transaction.toggleEdit()"></i>
+			<i class="fa fa-pencil-square-o" aria-hidden="true" ng-click="transaction.toggleEdit()" ng-if="transaction.isAdmin"></i>
 		</h3>
 		<h3 ng-show="transaction.editMode">
 			<select ng-model="transaction.transType" ng-options="type as type.description for type in transaction.types track by type.id">

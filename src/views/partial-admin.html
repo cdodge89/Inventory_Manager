@@ -18,7 +18,7 @@
 				<th>Cost</th>
 			</tr>
 			<!--<admin-transaction ng-repeat="transaction in admin.transactions" transaction="transaction"></admin-transaction>-->
-			<tr ui-sref="transaction-details({transId: vm.transaction.id})" ng-repeat="transaction in admin.transactions" transaction="transaction">
+			<tr ui-sref="transaction-details({transId: transaction.id})" ng-repeat="transaction in admin.transactions" transaction="transaction">
 				<td>{{transaction.id}}</td>
 				<td>{{transaction.type.description}}</td>
 				<td>{{transaction.date|date:'medium'}}</td>

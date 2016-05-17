@@ -1,11 +1,12 @@
 (function(){
 	angular.module('routerApp')
-		.controller('TransactionDetailsController', ['getAllProducts','Transaction', 'Item', 'getTransactionDetails', '$stateParams', '$scope', 
-											function(getAllProducts,Transaction, Item, getTransactionDetails, $stateParams, $scope){
+		.controller('TransactionDetailsController', ['getAllProducts','Transaction', 'Item', 'getTransactionDetails', '$stateParams', '$scope', 'Auth',
+											function(getAllProducts,Transaction, Item, getTransactionDetails, $stateParams, $scope, Auth){
 			var vm = this;
 
 			vm.transaction = getTransactionDetails;
 			vm.isOpen = false;
+			vm.isAdmin = Auth.isAdmin();
 			// vm.newTransaction = {};
 			vm.products = getAllProducts;
 			console.log('prods ', vm.products);
@@ -23,6 +24,7 @@
 			vm.editMode = false;
 			vm.toggleEdit = toggleEdit;
 			vm.putTransaction = putTransaction;
+		
 			console.log(vm.transaction);
 
 
