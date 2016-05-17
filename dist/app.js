@@ -53508,7 +53508,7 @@ angular.module('ui.bootstrap.typeahead').run(function() {!angular.$$csp().noInli
 (function(){
 	angular.module('routerApp').directive('newProduct', function(){
 		return{
-			templateUrl: 'views/dir-new-item',
+			templateUrl: 'views/dir-new-product',
 			scope: {
 				item: '=',
 				itemClicked: '&'
